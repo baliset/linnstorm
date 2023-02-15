@@ -25,14 +25,17 @@
     "react-router-dom": "~6.8.1",
     "redux": "~4.2.1",
     "reflect-metadata": "~0.1.13",
+    "reselect": "~4.1.7",
     "tsyringe": "~4.7.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
+    "@types/react-redux": "~7.1.25",
     "@types/styled-components": "~5.1.26",
+    "redux-devtools-extension": "~2.13.9",
     "typescript": "^4.9.3",
     "vite": "^4.1.0",
-   "@vitejs/plugin-react-swc": "~3.1.0"
+    "@vitejs/plugin-react-swc": "~3.1.0"
   }
 }
