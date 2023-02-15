@@ -113,8 +113,8 @@ export const  RtParameter = () => {
     o?.desc?.includes(filter)||
     o?.side?.includes(filter));
 
-  loadMyFaves(rowData);
-  loadLinnDefaults(rowData);
+  // loadMyFaves(rowData);
+  // loadLinnDefaults(rowData);
 
 
   const columnDefs =  linnPropColumnDefs;

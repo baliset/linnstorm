@@ -159,37 +159,6 @@ const wholeSeconds = (seconds) => seconds.toLocaleString('en-US', {minimumIntege
 let messageCtr = 0;
 
 
-const kLinnDefaults = 'LinnStrument.Defaults';
-
-function loadMyFaves(rows)
-{
-  const s = localStorage.getItem('hzsetting1');
-  const o = JSON.parse(s);
-
-  // apply the data that was saved
-  rows.forEach(row=>row.b = o[row.nrpn]);
-}
-function saveAsLinnDefaults()
-{
-  const v = JSON.stringify(currentLinnParams)
-  localStorage.setItem(kLinnDefaults,v);
-}
-
-function saveAsFave(name)
-{
-  const v = JSON.stringify(currentLinnParams)
-  localStorage.setItem(name,v);
-}
-
-
-function loadLinnDefaults(rows)
-{
-  const s = localStorage.getItem(kLinnDefaults);
-  const o = JSON.parse(s);
-
-  // apply the data that was saved
-  rows.forEach(row=>row.d = o[row.nrpn]);
-}
 
 const Intro = () => <section><h1>Intro</h1><p>Welcome</p></section>
 
@@ -218,9 +187,6 @@ const  App = () => {
 
 
   const {info,warn,error,fatal,dismiss} = actions.notify;
-
-  loadMyFaves(rowData);
-  loadLinnDefaults(rowData);
 
   const {  toggleLeft, toggleRight, } = actions.local;
 
@@ -251,9 +217,6 @@ const  App = () => {
               <TopButton onClick={()=>error({msg:`${messageCtr++}: Seen one error`, remedy:'Acknowledge'})}>Error Message</TopButton>
               <TopButton onClick={()=>warn({msg:`${messageCtr++}: This is a warning with Modal as a remedy`, remedy:'Modal'})}>Modal Warning</TopButton>
               <TopButton onClick={()=>warn({msg:`${messageCtr++}: This is a warning with Acknowledge as a remedy`, remedy:'Acknowledge'})}>Warning</TopButton>
-              <TopButton onClick={()=>loadMyFaves(rowData)}>Load My Faves</TopButton>
-
-              <TopButton onClick={()=>loadLinnDefaults(rowData)}>LoadStoredDefaults</TopButton>
               <TopButton onClick={()=>{toggleRight(900)}}>Toggle Slice View</TopButton>
 
             </Left>
