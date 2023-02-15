@@ -1,10 +1,14 @@
 import React from 'react'
 import './index.css'
-import {render} from 'react-dom';
+import { createRoot } from 'react-dom/client';
+
 import {connectRootComponent} from './actions-integration';
 import {AboveApp} from './AboveApp';
 
 
-const RootComponent =  connectRootComponent(AboveApp) as unknown as React.Component;
-// @ts-ignore
-render(<RootComponent/>,  document.getElementById('root'));
+const RootComponent =  connectRootComponent(AboveApp) as unknown as React.FunctionComponent;
+
+const container = document.getElementById('root');
+
+const root = createRoot(container!); // createRoot(container!) if you use TypeScript
+root.render(<RootComponent />);
