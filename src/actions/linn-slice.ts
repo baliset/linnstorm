@@ -38,10 +38,7 @@ function mapScaleToKeys(scaleNotes:number[]): number[]
     0,0,0,0,
     0,0,0,0,
   ];
-  scaleNotes.slice(0,-1).forEach((n,i)=>{
-    t[n]=i+1
-    console.info(`foreach calls (${n}, ${i})=> item at t[${n}] should have value of ${i+1}`);
-  });
+  scaleNotes.slice(0,-1).forEach((n,i)=>t[n]=i+1);
   return t;
 }
 
