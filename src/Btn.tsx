@@ -8,10 +8,11 @@ export const Btn = styled.button`
 
   color: #fff;
   background-color: var(--bg);
-  padding: 10px 30px;
+  margin-right: 7px;
+  padding: 10px 20px;
   box-shadow: rgba(0, 0, 0, 0.15) 0 2px 8px;
   border-radius: 0 16px;
-  display: flex;
+  display: inline-flex;
   flex-direction: row;
   align-items: center;
   cursor: pointer;
@@ -21,3 +22,12 @@ export const Btn = styled.button`
     color: black;
   }
 `;
+
+// radio-ish buttons
+export const RBtn = styled(Btn)`
+  margin-left: 7px;
+  margin-right: 0px;
+  padding: 5px 10px;
+  border-radius: 24px 24px;
+
+`
