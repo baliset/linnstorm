@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="1080" height="1080" viewBox="0 0 1080 1080" xml:space="preserve">
+<desc>best i could think of for a favicon</desc>
+<defs>
+</defs>
+<rect x="0" y="0" width="100%" height="100%" fill="transparent"/>
+<g transform="matrix(1 0 0 1 540 540)" id="SvgjsG1005">
+<rect style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(215,10,10); fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke" x="-540" y="-540" rx="0" ry="0" width="1080" height="1080"/>
+</g>
+<g transform="matrix(1 0 0 1 540 540)" id="SvgjsG1004">
+</g>
+<g transform="matrix(16.34 0 0 16.34 540.84 540.09)" id="SvgjsG1003">
+<rect style="stroke: rgb(0,0,0); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(101,101,101); fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke" x="-33.0835" y="-33.0835" rx="0" ry="0" width="66.167" height="66.167"/>
+</g>
+<g transform="matrix(15.61 0 0 15.61 540 540)" id="SvgjsG1002">
+<rect style="stroke: rgb(0,0,0); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(173,169,169); fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke" x="-33.0835" y="-33.0835" rx="0" ry="0" width="66.167" height="66.167"/>
+</g>
+<g transform="matrix(7.4 0 0 7.4 543.95 527.47)" id="SvgjsG1001">
+<circle style="stroke: rgb(0,0,0); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(0,206,125); fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke" cx="0" cy="0" r="35"/>
+</g>
+<g transform="matrix(2.54 0 0 2.54 547.54 525)" id="SvgjsG1000">
+<circle style="stroke: rgb(0,0,0); stroke-width: 0; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(151,247,210); fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke" cx="0" cy="0" r="35"/>
+</g>
+<style>@media (prefers-color-scheme: light) { :root { filter: none; } }
+@media (prefers-color-scheme: dark) { :root { filter: contrast(1) brightness(1.2); } }
+</style></svg>
