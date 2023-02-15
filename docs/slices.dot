@@ -1,0 +1,42 @@
+digraph G {
+    rankdir = BT;
+
+    node [shape=rect weight=1]
+
+
+    subgraph  {
+	    color=pink;
+	    style=filled;
+       providerWrapper->store->rootReducer->reducers->sliceConfig->state->stateTypes  [weight=10]
+
+
+    }
+
+
+    unboundActions->sliceConfig [label="derived from creators"]
+
+    /*middlewares->boundActions [color=red]*/
+    composedMiddleware->middlewares
+
+    store->composedMiddleware
+
+    boundActions->{store, unboundActions}
+
+
+    selector->stateTypes;
+
+    /* the following exists for establishing rankings */
+    node [color=none fontcolor=none]
+    a->b->c->d->e->f->g [color=none]
+
+    {rank = same  g; stateTypes;}
+    {rank = same  f; state; }
+
+    {rank = same  e; sliceConfig; middlewares; }
+    {rank = same  d; reducers; }
+
+    {rank = same  c; rootReducer; composedMiddleware}
+
+    {rank = same; b; store; unboundActions;}
+    {rank = same; a; boundActions; providerWrapper; selector; }
+}

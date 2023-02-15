@@ -1,0 +1,67 @@
+digraph G {
+    rankdir = BT;
+    splines=ortho
+
+
+
+
+   subgraph cluster_basic {
+    node [shape=parallelogram weight=1 style=filled fillcolor=palegreen]
+    sReq [label=request];
+    sCov [label=coverage];
+    sNotify [label=notify];
+
+    node [fillcolor="#EEFFEE"]
+
+    sAuth [label=auth];
+    sApi [label=api];
+    sAws [label=aws];
+    sLocal [label=local];
+
+    label="process #2";
+    color=blue
+   }
+
+    node [shape=rect weight=1 fillcolor=cyan]
+    mCov [label=coverage];
+    mLog  [label=logging];
+    mFatal [label=fatal];
+
+   node [shape=rect weight=1 fillcolor=lightblue]
+
+    mAuth [label=auth];
+    mApi [label=api];
+    mAws [label=aws];
+
+    node [shape=rect weight=1 fillcolor=red]
+
+
+    /*------*/
+    mAws->{sReq,sNotify}
+    mApi->{sReq,sNotify}
+    mAuth->{sReq,sNotify}
+
+    mAws->sAws   [weight = 10]
+    mApi->sApi   [weight = 10]
+    mAuth->sAuth [weight = 10]
+    mCov->sCov
+    mLog;
+    mFatal
+
+
+
+    /* the following exists for establishing rankings */
+    node [color=none fillcolor=none fontcolor=black]
+    a->b->c->d->e->f->g [color=none]
+
+    {rank = same  g;  sReq,sNotify,sCov}
+    {rank = same  e;  sAuth; sApi; sAws; sLocal;}
+
+    {rank = same  f;  mCov;mLog;mFatal;}
+    {rank = same  d;  }
+
+    {rank = same  c; }
+
+    {rank = same; b; }
+    {rank = same; a;  }
+}
