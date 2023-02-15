@@ -84,11 +84,11 @@ if ! [ -d .git ]; then
 fi;
 
 #determine relative path of script from where script is running
-DIRSCRIPT=$( dirname -- "${BASH_SOURCE[0]}" )
+#DIRSCRIPT=$( dirname -- "${BASH_SOURCE[0]}" )
 
-if [ "${DIRSCRIPT}" == "./deploy-scripts" ]; then
-  die "You may not run this script from inside ./deploy-scripts, but must run from the root"
-fi
+#if [ "${DIRSCRIPT}" == "./deploy-scripts" ]; then
+#  die "You may not run this script from inside ./deploy-scripts, but must run from the root"
+#fi
 
 
 if ! git ls-remote origin --quiet; then
@@ -104,17 +104,19 @@ NNN=$(date +%s%N | cut -b1-13) # milliseconds type timestamp for temporary branc
 L_SRC="${O_SRC}-temp-${NNN}"   # name of local copy of origin source branch (so no impact on your current branch)
 
 # A series of sanity checks, you cannot have src=dst, dst=master, target a branch not matching the naming convention deploy/*
-if [ "${O_TGT}" == "master" ]; then
-  die "deploying to branch 'master' is a no-no"
+if [ "${O_TGT}" == "main" ]; then
+  die "deploying to branch 'main' is a no-no"
 fi
 
 if [ "${O_TGT}" == "${O_SRC}" ]; then
   die "deploying '${O_TGT}' to itself sounds just wrong"
 fi
 
-if [[ $O_TGT != deploy/* ]]; then
-  die "branch '${O_TGT}' doesn't match expected target branch pattern 'deploy/*'"
-fi
+echo "For the present, ${0} has disabled requirement that target branch be named deploy/*"
+
+#if [[ $O_TGT != deploy/* ]]; then
+#  die "branch '${O_TGT}' doesn't match expected target branch pattern 'deploy/*'"
+#fi
 
 
 # you have to confirm this is what you want to do
@@ -153,6 +155,7 @@ MYNAME="${MYNAME##*=}"
 MYEMAIL=$(git config -l | grep 'user.email')
 MYEMAIL="${MYEMAIL##*=}"
 
+ZONE=America/New_York  # we are using new york time for reporting (for now)
 DT=$(date -u +"%Y-%m-%d %T")            #get the time just before pushing
 TAG_DT=$(echo "${DT: -17}" |tr -d ':-'| tr ' ' '-')   #remove tag illegal characters for use in tag itself
 TAG_NAME="d_${COMMIT:0:6}_${O_TGT}_${TAG_DT}"
