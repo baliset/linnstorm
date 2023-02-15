@@ -1,7 +1,8 @@
 import React, {useEffect} from "react";
-import { useSnackbar, VariantType } from "notistack";
+import {SnackbarAction, useSnackbar, VariantType} from "notistack";
 import {actions, useSelector} from './actions-integration';
 import {NotifyState, Notice} from './actions/notify-slice'
+import {Btn} from './Btn';
 
 // adapting from Humza, recall items that we have on display
 let displayed: Record<Notice['key'],Notice> = {};
@@ -21,7 +22,7 @@ export const NotifyWrapper = () => {
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const {dismiss} = actions.notify;
-  const notifierAction = (key:Notice['key']) =><button onClick={() => closeSnackbar(key)}>Dismiss</button>
+  const notifierAction = (key:Notice['key']) =><Btn onClick={() => closeSnackbar(key)}>Dismiss</Btn>
 
   const {notices} = notify;
   useEffect(() => {
@@ -30,8 +31,9 @@ export const NotifyWrapper = () => {
         (_:unknown, notice:Notice) => {
           const {level, key, msg}  = notice;
           const variant = levelToSnackbarVariant(level);
-            enqueueSnackbar(msg, {
-              key, variant, action: notifierAction,
+            // @ts-ignore
+          enqueueSnackbar(msg, {
+              key, variant, action: notifierAction as unknown as SnackbarAction,
               onExited: (event, key) => {
                 dismiss(key);           // action removes it from list
                 delete displayed[key];  // from local tracking too (if necessary--  doubt it)
