@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from './actions-integration';
+import { useSelector } from '../actions-integration';
 import styled from 'styled-components';
 import {Expandit} from './ExpandIt';
 

@@ -3,8 +3,8 @@ import React, {useRef, useState} from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-dark.css';
-import {CheckboxRenderer} from './agstuff/CheckboxRenderer';
-import {LinnParamRenderer} from "./agstuff/LinnParamRenderer";
+import {CheckboxRenderer} from '../agstuff/CheckboxRenderer';
+import {LinnParamRenderer} from "../agstuff/LinnParamRenderer";
 
 const style = {height: '700px', width: '100%'};
 

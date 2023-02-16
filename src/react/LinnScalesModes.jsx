@@ -1,17 +1,14 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback} from 'react';
 import styled from 'styled-components';
-import {interrogate, midiSetup, test} from "./mymidi";
-import {actions, useSelector} from './actions-integration';
-import {allGlobals, allParams} from "./LinnVals";
-import {pitchClass} from "./linnutils/linn-expansion";
+import {actions, useSelector} from '../actions-integration';
+import {pitchClass} from "../linnutils/linn-expansion";
 
 const TSlider = styled.input`
   width:27em;
   padding:0;
   display: block;
   accent-color: ${p=>p.color};
-`
-
+`;
 
 const WhiteKey = styled.div`
   display: inline-block;

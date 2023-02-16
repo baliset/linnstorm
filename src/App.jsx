@@ -4,19 +4,21 @@ import { Route, Routes, NavLink, useLocation } from "react-router-dom"
 
 import styled from 'styled-components';
 
-import {Modal} from "./Modal";
-import {RtParameter} from "./RtParameters";
 import { linnPropColumnDefs} from "./xform/columndefs";
 import {actions, useSelector} from './actions-integration';
 
 
 import {isNumber} from "luxon/src/impl/util";
-import {SliceView} from "./SliceView";
 import {SnackbarProvider, useSnackbar} from "notistack";
-import {NotifyWrapper} from "./NotifyWrapper";
+
+import {NotifyWrapper} from "./react/NotifyWrapper";
+import {Modal} from "./react/Modal";
+import {SliceView} from "./react/SliceView";
+import {RtParameter} from "./react/RtParameters";
+import LinnScalesModes from "./react/LinnScalesModes";
+import {RtMidiview} from "./react/RtMidiview";
+
 import {currentLinnParams, midiSetup, rowData} from "./mymidi";
-import LinnScalesModes from "./LinnScalesModes";
-import {RtMidiview} from "./RtMidiview";
 
 const palette = {
       plum: '#4b54a1',

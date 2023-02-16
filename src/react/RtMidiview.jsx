@@ -1,9 +1,9 @@
 import React, { useState} from 'react';
 import {MyGrid} from "./MyGrid";
-import { midiColumnDefs} from "./xform/columndefs";
-import {actions} from "./actions-integration";
-import {selectors} from "./actions/selectors";
-import {useSelector} from "./actions-integration";
+import { midiColumnDefs} from "../xform/columndefs";
+import {actions} from "../actions-integration";
+import {selectors} from "../actions/selectors";
+import {useSelector} from "../actions-integration";
 
 const getRowNodeId = data=>data.id
 

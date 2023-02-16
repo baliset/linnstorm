@@ -1,9 +1,9 @@
 import React, { useState} from 'react';
 import styled from 'styled-components';
 import {MyGrid} from "./MyGrid";
-import { linnPropColumnDefs} from "./xform/columndefs";
 import LinnControl from "./LinnControl";
-import {currentLinnParams, rowData} from "./mymidi";
+import { linnPropColumnDefs} from "../xform/columndefs";
+import {currentLinnParams, rowData} from "../mymidi";
 
 const palette = {
       plum: '#4b54a1',
