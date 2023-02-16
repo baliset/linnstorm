@@ -6,8 +6,7 @@ if [ $# -lt 3 ]; then
     echo "where:"
     echo "        <  srcbranch > exists on origin"
     echo "        <targetbranch> presumably exists on origin as a deployment target branch"
-    echo "        <   message  > only explains motivation for deployment"
-    echo "                       e.g. 'Alex told me to' or 'QA said move this to UAT'"
+    echo "        <   message  > explains motivation for deployment"
     exit 1
 fi
 
@@ -158,7 +157,7 @@ MYEMAIL="${MYEMAIL##*=}"
 ZONE=America/New_York  # we are using new york time for reporting (for now)
 DT=$(date -u +"%Y-%m-%d %T")            #get the time just before pushing
 TAG_DT=$(echo "${DT: -17}" |tr -d ':-'| tr ' ' '-')   #remove tag illegal characters for use in tag itself
-TAG_NAME="d_${COMMIT:0:6}_${O_TGT}_${TAG_DT}"
+TAG_NAME="d-${TAG_DT}-${O_TGT}-${COMMIT:0:6}"
 
 ANNOTATION="${MYNAME} <${MYEMAIL}> deployed ${O_SRC}@${COMMIT:0:6} to ${O_TGT} ${3}"
 

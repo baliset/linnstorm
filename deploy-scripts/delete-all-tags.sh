@@ -4,11 +4,25 @@ if ! git ls-remote origin --quiet; then
   exit
 fi
 
-./confirm.sh "Do you really want to delete all tags local and remote?" || exit
-./confirm.sh "Do you really know exactly which repo you are in?" || exit
-./confirm.sh "Do you value your job, are you sure you are sure?" || exit
-./confirm.sh "Do you realize you have a family that needs your income?" || exit
-./confirm.sh "Have I asked for enough confirmations, should I delete all tags?" || exit
+function confirm() {
+  # call with a prompt string or use a default
+  read -r -p "${1:-Are you sure? [y/N]} " response
+  case "$response" in
+    [yY][eE][sS]|[yY])
+        true
+        ;;
+    *)
+        false
+        ;;
+  esac
+}
+
+
+confirm "Do you really want to delete all tags local and remote?" || exit
+confirm "Do you really know exactly which repo you are in?" || exit
+confirm "Do you value your job, are you sure you are sure?" || exit
+confirm "Do you realize you have a family that needs your income?" || exit
+confirm "Have I asked for enough confirmations, should I delete all tags?" || exit
 
 
 git tag -d $(git tag -l)               # delete all local tags first
