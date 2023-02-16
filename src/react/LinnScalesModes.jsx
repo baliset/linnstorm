@@ -2,6 +2,7 @@ import React, {useCallback} from 'react';
 import styled from 'styled-components';
 import {actions, useSelector} from '../actions-integration';
 import {pitchClass} from "../linnutils/linn-expansion";
+import {LinnCellDiv, LinnRowDiv, LinnCell} from "./LinnCell";
 
 const TSlider = styled.input`
   width:27em;
@@ -106,7 +107,13 @@ const  LinnScalesModes = ({rows}) => {
 
 
         </Keyboard>
-
+      <LinnCellDiv>
+        {[0,1,2,3,4,5,6,7].reverse().map(y=>(<LinnRowDiv>
+          {[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24].map(x=>(
+            <LinnCell x={x} y={y}>{x},{y}</LinnCell>
+          ))}
+        </LinnRowDiv>))}
+      </LinnCellDiv>
     </div>
 
   );
