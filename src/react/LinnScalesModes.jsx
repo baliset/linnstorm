@@ -52,19 +52,7 @@ const Keyboard = styled.div`
 const SLabel = styled.label`color: white`;
 
 
-const btnAttrs = `
-  padding-right:  10px;
-  padding-left:   10px;
-  margin-left:    10px;
-  margin-right:     10px;
-`;
 
-
-const ScaleBtn = styled.button`${btnAttrs}`;
-
-const border = {border:'1px solid',  borderCollapse: 'collapse'};
-
-const propFilter = (propName, inputf) => o => inputf === '' || o?.[propName].includes(inputf);
 
 const whChars = [0, "h", "w", "w+h"]
 const patternToWh = a => a.map(v=>whChars[v]).join(', ');
@@ -75,20 +63,33 @@ const keyText = (tonic, scaleMappedToKeys, i) => {
   return scaleMappedToKeys[i%12] || ''
 };
 
-const  LinnScalesModes = ({rows}) => {
-    const {
-      linn:  {tonic, scaleIndex, scaleName, scaleType, scaleCount, scaleSteps, scaleNotes, scaleMappedToKeys},
-      } = useSelector(s=>s);
-  const changeT = useCallback(e => actions.linn.tonic(Number(e.target.value)),[]);
-  const changeSc = useCallback(e => actions.linn.scale(Number(e.target.value)),[]);
+// what note is any cell is based on tuning
+const xyNote = (x, y, baseNote, offset)=> y*offset + x + baseNote;
 
+// todo pass in actual properties to visualize current configuration as well as experiment with others
+const  LinnScalesModes = () => {
+    const {
+      linn:  {tonic, scaleIndex, scaleName, scaleType, scaleCount, scaleSteps, scaleNotes, scaleMappedToKeys, transposeSemis, baseMidiNote, tuningOffsetSemis},
+      } = useSelector(s=>s);
+  const changeT  = useCallback(e => actions.linn.tonic(Number(e.target.value)),[]);
+  const changeSc = useCallback(e => actions.linn.scale(Number(e.target.value)),[]);
+  const changeTr = useCallback(e => actions.linn.transposeSemis(Number(e.target.value)),[]);
+  const changeTu = useCallback(e => actions.linn.tuningOffsetSemis(Number(e.target.value)),[]);
 
   return  (
 
-      <div>
+      <div style={{marginLeft: '60px'}}>
 
         <Keyboard>
           <div style={{paddingLeft: '10px'}}>
+
+            <SLabel>Row Tuning Offset:   {tuningOffsetSemis} semitones</SLabel>
+            <TSlider  color="orange" name="Tuning" type="range" min={0} max={12} defaultValue={ tuningOffsetSemis } onChange={ changeTu }/>
+
+            <SLabel>Transpose Semitones:  base of midi note #{baseMidiNote} offset by {transposeSemis} semitones</SLabel>
+            <TSlider  color="green" name="Trans" type="range" min={-baseMidiNote} max={baseMidiNote+67} defaultValue={ transposeSemis } onChange={ changeTr }/>
+
+
             <SLabel>Tonic on {pitchClass[tonic]}</SLabel>
             <TSlider  color="red" name="Tonic" type="range" min="0" max="11" defaultValue={ tonic } onChange={ changeT }/>
 
@@ -108,10 +109,14 @@ const  LinnScalesModes = ({rows}) => {
 
         </Keyboard>
       <LinnCellDiv>
-        {[0,1,2,3,4,5,6,7].reverse().map(y=>(<LinnRowDiv>
-          {[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24].map(x=>(
-            <LinnCell x={x} y={y}>{x},{y}</LinnCell>
-          ))}
+        {[0,1,2,3,4,5,6,7].reverse().map(y=>(<LinnRowDiv key={y}>
+          {[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24].map(x=> {
+           const note = xyNote(x, y, baseMidiNote + transposeSemis, tuningOffsetSemis);
+           const normNote = note % 12;
+
+           const isScale = scaleNotes.find(v=>v===normNote) !== undefined;
+           return  <LinnCell key={y*25+x} x={x} y={y} isTonic={normNote === tonic} isScale={isScale}>{note}</LinnCell>
+          })}
         </LinnRowDiv>))}
       </LinnCellDiv>
     </div>

@@ -9,15 +9,20 @@ export const LinnCellDiv = styled.div`
 export const LinnRowDiv = styled.div`
   width: fit-content;
   height: fit-content;
-`
+`;
 
-export const LinnCell = styled.button`
+
+type LinnCellProps = {x:number; y:number; isTonic:boolean, isScale:boolean};
+
+export const LinnCell= styled('div')<LinnCellProps>`
   --bg:#ccc;
+  --tonicColor:#0f0;
+  --scaleColor:#0ff;
   --hl:#eee;
   --dim:50px;
   
   color: black;
-  background-color: var(--bg);
+  background-color: ${p=>p.isTonic? '#0f0': p.isScale? '#0ff' : '#ccc'};
   margin: 0;
   min-width: var(--dim);
   max-width:  var(--dim);
@@ -36,3 +41,4 @@ export const LinnCell = styled.button`
   }
   
 `;
+

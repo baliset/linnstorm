@@ -1,6 +1,8 @@
 import {scaleOfScales} from '../scales';
 
 export interface LinnState {
+  baseMidiNote: 30;  // this is a fixed note numbner
+  transposeSemis:number;
   tonic: number;
   scaleCount: number;  // total number of scales
   scaleIndex: number;
@@ -10,6 +12,7 @@ export interface LinnState {
   scaleNotes: number[];
   scaleMappedToKeys: number[]; // given 12 keys starting at C natural, which numbers are they if any in order of the scale?
   midiView:Record<number, Record<string, any>>;
+  tuningOffsetSemis:number; // 5 = fourths
 }
 
 type LinnCreator = (s:LinnState,...rest: any)=>unknown;
@@ -28,7 +31,9 @@ interface SliceConfig {
 function deriveScaleNotes(tonic:number, semitoneSteps:number[]):number[]
 {
   const tt =  [0, ...semitoneSteps].map((v,i,a)=>a.slice(0,i+1));
-  return tt.map(aa=> aa.reduce((a,v) => (a+v)%12, tonic));
+  const result =  tt.map(aa=> aa.reduce((a,v) => (a+v)%12, tonic));
+  console.log(`scalenotes`,result);
+  return result;
 }
 
 function mapScaleToKeys(scaleNotes:number[]): number[]
@@ -53,8 +58,10 @@ const initialState:LinnState = {
   scaleSteps: scaleOfScales[0].ascending,
   scaleNotes: deriveScaleNotes(0, scaleOfScales[0].ascending ),
   scaleMappedToKeys: mapScaleToKeys(deriveScaleNotes(0, scaleOfScales[0].ascending )),
-  midiView: {} // nothing recorded
-
+  baseMidiNote: 30,
+  transposeSemis:0,
+  midiView: {}, // nothing recorded
+  tuningOffsetSemis: 5, //
 };
 
 
@@ -65,7 +72,9 @@ const creators:LinnCreators = {
   tonic: (value) => ({value}),
   scale: (value) => ({value}),
   clearMidiView:()=>({}),
-  updateMidiView:(record)=>({record})
+  updateMidiView:(record)=>({record}),
+  transposeSemis:(transposeSemis)=>({transposeSemis}),
+  tuningOffsetSemis:(tuningOffsetSemis)=>({tuningOffsetSemis}),
 };
 
 const reducers:LinnReducers = {
@@ -91,6 +100,8 @@ const reducers:LinnReducers = {
     },
     clearMidiView: (s) => ({...s, midiView: {}}),
     updateMidiView:(s, {record}) => ({...s, midiView: {...s.midiView, [record.id]:record}}),
+    transposeSemis:(s, {transposeSemis})=>({...s, transposeSemis}),
+    tuningOffsetSemis:(s, {tuningOffsetSemis})=>({...s, tuningOffsetSemis}),
 };
 
 
