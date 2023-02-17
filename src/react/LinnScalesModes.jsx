@@ -1,7 +1,7 @@
 import React, {useCallback} from 'react';
 import styled from 'styled-components';
 import {actions, useSelector} from '../actions-integration';
-import {pitchClass, scalePitchAdjust} from "../linnutils/linn-expansion";
+import {scalePitchAdjust} from "../linnutils/linn-expansion";
 import {LinnCellDiv, LinnRowDiv, LinnCell} from "./LinnCell";
 import {Radio} from "./Radio";
 
@@ -58,11 +58,15 @@ const SLabel = styled.label`color: white`;
 const whChars = [0, "h", "w", "w+h"]
 const patternToWh = a => a.map(v=>whChars[v]).join(', ');
 
-const keyText = (tonic, scaleMappedToKeys, i) => {
+const keyText = (tonic, scaleMappedToKeys, i, pcArr) => {
   if(i < tonic || i > tonic+11)
     return '';
-  return scaleMappedToKeys[i%12] || ''
+
+  const mod = i % 12;
+
+  return  scaleMappedToKeys[mod] ? (pcArr[mod] || '') : '';
 };
+
 
 // what note is any cell is based on tuning
 const xyNote = (x, y, baseNote, offset)=> y*offset + x + baseNote;
@@ -114,8 +118,8 @@ const  LinnScalesModes = () => {
 
           {[0,-1,2,-3,4,5,-6,7,-8,9,-10,11,12,-13,14,-15,16,17,-18,19,-20,21,-22,23].map(v=>{
             const black = v<0;
-            return black?<BlackKey key={v} pn={-v} t={tonic}>{keyText(tonic, scaleMappedToKeys, -v)}</BlackKey>:
-                         <WhiteKey key={v} pn={ v} t={tonic}>{keyText(tonic, scaleMappedToKeys,  v)}</WhiteKey>;
+            return black?<BlackKey key={v} pn={-v} t={tonic}>{keyText(tonic, scaleMappedToKeys, -v, pcArray)}</BlackKey>:
+                         <WhiteKey key={v} pn={ v} t={tonic}>{keyText(tonic, scaleMappedToKeys,  v, pcArray)}</WhiteKey>;
           })}
 
 
@@ -132,7 +136,8 @@ const  LinnScalesModes = () => {
            const normNote = note % 12;
 
            const isScale = scaleNotes.find(v=>v===normNote) !== undefined;
-           return  <LinnCell key={y*25+x} x={x} y={y} isTonic={normNote === tonic} isScale={isScale}>{nameThatNote(note, pcArray)}</LinnCell>
+           return  <LinnCell key={y*25+x} x={x} y={y} isTonic={normNote === tonic} isScale={isScale}>
+           {(isScale || (!y && !x) || (y===7 && x === 24))? nameThatNote(note, pcArray):'-'}</LinnCell>
           })}
         </LinnRowDiv>))}
       </LinnCellDiv>

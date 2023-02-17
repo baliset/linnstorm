@@ -29,6 +29,12 @@ export const LinnCell= styled('div')<LinnCellProps>`
   min-height: var(--dim);
   max-height: var(--dim);
 
+  font-size: x-small;
+  border-right: 2px solid #555;
+  border-bottom: 2px solid #555;
+  border-top: 2px solid #888;
+  border-left: 2px solid #888;
+  
   padding: 10px 10px;
   display: inline-flex;
   flex-direction: row;

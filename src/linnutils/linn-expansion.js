@@ -20,8 +20,8 @@ export const animations = [
 const colors = ['!as set!','red','yellow','green','cyan','blue','magenta','!off!','white','orange','lime','pink'];
 const octave = [-5,-4,-3,-2,-1, 0,'+1','+2','+3','+4','+5'];
 const trPitch = [-7,-6,-5,-4,-3,-2,-1,0,'+1','+2','+3','+4','+5','+6','+7'];
-export const pitchClass = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']; // flats are BEA sharps FC
-export const flatPitchClass = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+export const pitchClass = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B']; // flats are BEA sharps FC
+export const flatPitchClass = ['C', 'D♭', 'D', 'E♭', 'E', 'F', 'G♭', 'G', 'A♭', 'A', 'B♭', 'B'];
 
 // count repeats of use of note names
 const countRepeats = (ns, pcArr) => ns.filter((n,i,a)=>i > 0 && pcArr[n].slice(0,1) === pcArr[a[i-1]].slice(0,1)).length;
