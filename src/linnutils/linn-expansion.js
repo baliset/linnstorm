@@ -21,7 +21,24 @@ const colors = ['!as set!','red','yellow','green','cyan','blue','magenta','!off!
 const octave = [-5,-4,-3,-2,-1, 0,'+1','+2','+3','+4','+5'];
 const trPitch = [-7,-6,-5,-4,-3,-2,-1,0,'+1','+2','+3','+4','+5','+6','+7'];
 export const pitchClass = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']; // flats are BEA sharps FC
+export const flatPitchClass = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
 
+// count repeats of use of note names
+const countRepeats = (ns, pcArr) => ns.filter((n,i,a)=>i > 0 && pcArr[n].slice(0,1) === pcArr[a[i-1]].slice(0,1)).length;
+
+// naive algorithm comparse a scale (ann array of indicies into twelve tones) against a sharps or a flats representation
+// and picks the one that repeats the fewest note names  (i.e. prefer F Gb to F F#)
+export const scalePitchAdjust = (scale) => {
+
+  const pcCount  = countRepeats(scale, pitchClass);
+  const fpcCount = countRepeats(scale, flatPitchClass);
+
+  if(fpcCount <= pcCount)
+    return flatPitchClass;
+  else
+    return pitchClass;
+
+}
 export function vfParamType(nrpn)
 {
   // there are pairs of values 0-66 and 100-166 that have same formatting

@@ -1,5 +1,10 @@
 import {scaleOfScales} from '../scales';
 
+
+interface TuningSubstate {
+  tuningPref: 'current'|'default'|'explore'; // what should linnstrument show, the defaults, current settings, or explore a new one
+
+ }
 export interface LinnState {
   baseMidiNote: 30;  // this is a fixed note numbner
   transposeSemis:number;
@@ -13,6 +18,7 @@ export interface LinnState {
   scaleMappedToKeys: number[]; // given 12 keys starting at C natural, which numbers are they if any in order of the scale?
   midiView:Record<number, Record<string, any>>;
   tuningOffsetSemis:number; // 5 = fourths
+  tuningSubState:TuningSubstate;
 }
 
 type LinnCreator = (s:LinnState,...rest: any)=>unknown;
@@ -32,7 +38,6 @@ function deriveScaleNotes(tonic:number, semitoneSteps:number[]):number[]
 {
   const tt =  [0, ...semitoneSteps].map((v,i,a)=>a.slice(0,i+1));
   const result =  tt.map(aa=> aa.reduce((a,v) => (a+v)%12, tonic));
-  console.log(`scalenotes`,result);
   return result;
 }
 
@@ -62,6 +67,8 @@ const initialState:LinnState = {
   transposeSemis:0,
   midiView: {}, // nothing recorded
   tuningOffsetSemis: 5, //
+  tuningSubState: {tuningPref: 'explore'},
+
 };
 
 
@@ -75,6 +82,7 @@ const creators:LinnCreators = {
   updateMidiView:(record)=>({record}),
   transposeSemis:(transposeSemis)=>({transposeSemis}),
   tuningOffsetSemis:(tuningOffsetSemis)=>({tuningOffsetSemis}),
+  tuningPref: (tuningPref)=>({tuningPref}),
 };
 
 const reducers:LinnReducers = {
@@ -102,6 +110,8 @@ const reducers:LinnReducers = {
     updateMidiView:(s, {record}) => ({...s, midiView: {...s.midiView, [record.id]:record}}),
     transposeSemis:(s, {transposeSemis})=>({...s, transposeSemis}),
     tuningOffsetSemis:(s, {tuningOffsetSemis})=>({...s, tuningOffsetSemis}),
+    tuningPref: (s, {tuningPref})=>({...s, tuningSubState: {...s.tuningSubState, tuningPref}}),
+
 };
 
 

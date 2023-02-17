@@ -1,8 +1,9 @@
 import React, {useCallback} from 'react';
 import styled from 'styled-components';
 import {actions, useSelector} from '../actions-integration';
-import {pitchClass} from "../linnutils/linn-expansion";
+import {pitchClass, scalePitchAdjust} from "../linnutils/linn-expansion";
 import {LinnCellDiv, LinnRowDiv, LinnCell} from "./LinnCell";
+import {Radio} from "./Radio";
 
 const TSlider = styled.input`
   width:27em;
@@ -66,15 +67,26 @@ const keyText = (tonic, scaleMappedToKeys, i) => {
 // what note is any cell is based on tuning
 const xyNote = (x, y, baseNote, offset)=> y*offset + x + baseNote;
 
+const nameThatNote = ( v, pcArray) =>`${pcArray[v%12]}${Math.trunc(v/12)-1}`;
+
+const nameThatPitchClass = ( v, pcArray) => pcArray[v%12];
+
+
 // todo pass in actual properties to visualize current configuration as well as experiment with others
 const  LinnScalesModes = () => {
     const {
-      linn:  {tonic, scaleIndex, scaleName, scaleType, scaleCount, scaleSteps, scaleNotes, scaleMappedToKeys, transposeSemis, baseMidiNote, tuningOffsetSemis},
+      linn:  {tonic, scaleIndex, scaleName, scaleType, scaleCount, scaleSteps,
+      scaleNotes, scaleMappedToKeys, transposeSemis, baseMidiNote, tuningOffsetSemis,
+      tuningSubState: {tuningPref}
+      },
       } = useSelector(s=>s);
   const changeT  = useCallback(e => actions.linn.tonic(Number(e.target.value)),[]);
   const changeSc = useCallback(e => actions.linn.scale(Number(e.target.value)),[]);
   const changeTr = useCallback(e => actions.linn.transposeSemis(Number(e.target.value)),[]);
   const changeTu = useCallback(e => actions.linn.tuningOffsetSemis(Number(e.target.value)),[]);
+
+
+  const pcArray = scalePitchAdjust(scaleNotes);
 
   return  (
 
@@ -90,13 +102,13 @@ const  LinnScalesModes = () => {
             <TSlider  color="green" name="Trans" type="range" min={-baseMidiNote} max={baseMidiNote+67} defaultValue={ transposeSemis } onChange={ changeTr }/>
 
 
-            <SLabel>Tonic on {pitchClass[tonic]}</SLabel>
+            <SLabel>Tonic on {nameThatPitchClass(tonic,pcArray)}</SLabel>
             <TSlider  color="red" name="Tonic" type="range" min="0" max="11" defaultValue={ tonic } onChange={ changeT }/>
 
             <SLabel>Scale Selection:  ({scaleType} notes: {patternToWh(scaleSteps)}) {scaleName}</SLabel>
             <TSlider  color="blue" name="Scale" type="range" min="0" max={scaleCount-1} defaultValue={ scaleIndex } onChange={ changeSc }/>
 
-            <SLabel>Scale Notes: {scaleNotes.map(sn=>pitchClass[sn]).join(",")}</SLabel>
+            <SLabel>Scale Notes: {scaleNotes.map(sn=>nameThatPitchClass(sn,pcArray)).join(",")}</SLabel>
           </div>
 
 
@@ -107,7 +119,12 @@ const  LinnScalesModes = () => {
           })}
 
 
-        </Keyboard>
+      </Keyboard>
+
+      // todo collect current values or default values and set all the sliders according to those
+      //
+      <Radio style={{margin:'30px'}} name="whatevs" choices={['current', 'default', 'explore']} defaultChoice="current" setChoice={actions.linn.tuningPref}/>
+      Tuning preference is {tuningPref}
       <LinnCellDiv>
         {[0,1,2,3,4,5,6,7].reverse().map(y=>(<LinnRowDiv key={y}>
           {[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24].map(x=> {
@@ -115,7 +132,7 @@ const  LinnScalesModes = () => {
            const normNote = note % 12;
 
            const isScale = scaleNotes.find(v=>v===normNote) !== undefined;
-           return  <LinnCell key={y*25+x} x={x} y={y} isTonic={normNote === tonic} isScale={isScale}>{note}</LinnCell>
+           return  <LinnCell key={y*25+x} x={x} y={y} isTonic={normNote === tonic} isScale={isScale}>{nameThatNote(note, pcArray)}</LinnCell>
           })}
         </LinnRowDiv>))}
       </LinnCellDiv>
