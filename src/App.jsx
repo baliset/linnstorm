@@ -1,15 +1,13 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React from 'react';
 import { Route, Routes, NavLink, useLocation } from "react-router-dom"
 
 
 import styled from 'styled-components';
 
-import { linnPropColumnDefs} from "./xform/columndefs";
 import {actions, useSelector} from './actions-integration';
 
 
-import {isNumber} from "luxon/src/impl/util";
-import {SnackbarProvider, useSnackbar} from "notistack";
+import {SnackbarProvider} from "notistack";
 
 import {NotifyWrapper} from "./react/NotifyWrapper";
 import {Modal} from "./react/Modal";
@@ -18,7 +16,7 @@ import {RtParameter} from "./react/RtParameters";
 import LinnScalesModes from "./react/LinnScalesModes";
 import {RtMidiview} from "./react/RtMidiview";
 
-import {currentLinnParams, midiSetup, rowData} from "./mymidi";
+import {midiSetup} from "./mymidi";
 
 const palette = {
       plum: '#4b54a1',
@@ -46,10 +44,9 @@ const Layout = styled.div`
     column-gap:4px;
 
     grid-template-columns: ${props=>props.left}px minmax(0, 1fr) ${props=>props.right}px;
-    grid-template-rows: 30px minmax(0, 1fr) 30px;
-    grid-template-areas: "Navbar Navbar Navbar"
-                         "Left CenterBody Right"
-                         "Footer Footer Footer";    
+    grid-template-rows: 30px minmax(0, 1fr);
+    grid-template-areas: "LNavbar Navbar Navbar"
+                         "Left CenterBody Right";
 `;
 
 Layout.defaultProps = {left:200, right:0};
@@ -59,12 +56,8 @@ const Navbar = styled.section`
     padding-top: 5px;
     background-color: ${palette.midnight};
     color: ${palette.drab};
-`;
-const Footer = styled.section`
-    grid-row-start:3; 
-    grid-column-start:1; grid-column-end:4;
-    background-color: ${palette.blueslate};
-    color: ${palette.drab};
+    height:fit-content;
+    overflow: auto;
 `;
 
 const CenterBody = styled.section`
@@ -86,21 +79,6 @@ const Right = styled.section`
 `;
 
 
-const closef=()=>console.warn('closing');
-
-
-
-
-const gridMap = {
-    Trades: 'aTrades',
-    Quotes: 'aQuotes',
-    Parties: 'aParties'
-};
-
-const secondsFormatter = (params)=>isNumber(params.value)? params.value.toFixed(2):undefined;
-
-
-let interval;
 
 const topCssAttributes = `
   padding-right:          5px;
@@ -109,19 +87,7 @@ const topCssAttributes = `
   margin-right: 5px;
 `;
 
-const TopItem   = styled.span`
-${topCssAttributes}
-:after {
-  content: '\\00a0\\00a0'; // effectively nbsp
-  width: 0;
-  //height: 100%;
-  border-right: 1px solid white;
-  top: 0;
-  bottom: 0;
-}
 
-
-`; // sharing attributes since don't want button to inherit span
 const TopButton = styled.button`${topCssAttributes}`;
 
 const StyledLink =  styled(NavLink)`
@@ -129,19 +95,19 @@ const StyledLink =  styled(NavLink)`
   background: ${props=>props?.$active? '#0f0': 'antiquewhite'};
   min-width: 100px;
   border: 1px solid white;
-  margin: 0px;
+  margin: 0;
   padding: 5px;
-  
+
   &:active {
     color: red;
   }
-  
+
   &:hover {
     background: palegreen;
   }
-  
+
   border-radius: 3px;
-  
+
   & > * {
     color: orange;
     text-decoration: none;
@@ -156,7 +122,6 @@ const MyNavLink = ({to, children, curPath})=> {
 
 const AllSlices = () => <div>{Object.keys(actions).map((slice)=><SliceView key={slice} slice={slice}/>)}</div>;
 
-const wholeSeconds = (seconds) => seconds.toLocaleString('en-US', {minimumIntegerDigits:3, maximumFractionDigits:0});
 
 let messageCtr = 0;
 
@@ -168,15 +133,8 @@ const Intro = () => <section><h1>Intro</h1><p>Welcome</p></section>
 midiSetup( actions.linn);
 
 const  App = () => {
-  const [showSlices, setShowSlices] = useState(false);
-  const [filter, setFilter]  = useState('');
   const location = useLocation();
 
-  const ffFilter = o => filter === '' ||(
-    o?.key?.includes(filter) ||
-    o?.cat?.includes(filter) ||
-    o?.desc?.includes(filter)||
-    o?.side?.includes(filter));
 
 
 
@@ -188,11 +146,9 @@ const  App = () => {
     } = useSelector(s=>s);
 
 
-  const {info,warn,error,fatal,dismiss} = actions.notify;
+  const {warn,error,fatal,dismiss} = actions.notify;
 
   const {  toggleLeft, toggleRight, } = actions.local;
-
-  const columnDefs =  linnPropColumnDefs;
 
    return  (
    <SnackbarProvider maxSnack={5} hideIconVariant
@@ -204,11 +160,16 @@ const  App = () => {
             <Navbar>
 
 
-              <div style={{ margin: 'auto', width: '50%'}}>
+              <div style={{ margin: 'auto', width: '50%', display: 'inline-block'}}>
               <MyNavLink curPath={location.pathname} to="/">Intro</MyNavLink>
               <MyNavLink curPath={location.pathname} to="/params">Parameters</MyNavLink>
               <MyNavLink curPath={location.pathname} to="/tuning">Scales & Modes</MyNavLink>
               <MyNavLink curPath={location.pathname} to="/midi">Midi View</MyNavLink>
+              </div>
+              <div style={{float:'right', display: 'inline-block', marginRight:'20px'}}>
+                <a style={{color:'white', textDecoration:'none', font: 'Roboto', }}
+                href="https://www.netlify.com">
+                <span style={{verticalAlign: 'top', fontStyle: 'italic'}}>deployed via</span> <img height="20px"  src="/netlify/full-logo-dark.svg" alt="Netlify"/></a>
               </div>
 
             </Navbar>
