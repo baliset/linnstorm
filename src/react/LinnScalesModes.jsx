@@ -137,7 +137,7 @@ const  LinnScalesModes = () => {
 
            const isScale = scaleNotes.find(v=>v===normNote) !== undefined;
            return  <LinnCell key={y*25+x} x={x} y={y} isTonic={normNote === tonic} isScale={isScale}>
-           {(isScale || (!y && !x) || (y===7 && x === 24))? nameThatNote(note, pcArray):'-'}</LinnCell>
+           {(isScale || (!y && !x) || (y===7 && x === 24))? nameThatNote(note, pcArray):'\u00a0'}</LinnCell>
           })}
         </LinnRowDiv>))}
       </LinnCellDiv>
