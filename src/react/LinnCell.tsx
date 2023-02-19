@@ -4,7 +4,9 @@ import React from 'react';
 export const LinnCellDiv = styled.div`
   width: fit-content;
   height: fit-content;
-  margin: 60px;
+  margin: auto;
+  margin-top: 30px;
+
 `
 export const LinnRowDiv = styled.div`
   width: fit-content;

@@ -44,6 +44,8 @@ const BlackKey = styled(WhiteKey)`
 
 const Keyboard = styled.div`
   width: max-content;
+  margin:auto;
+  
   padding: 1em 1em 1em 1em;
   border-radius:10px;
   background: #103;
@@ -94,7 +96,7 @@ const  LinnScalesModes = () => {
 
   return  (
 
-      <div style={{marginLeft: '60px'}}>
+      <div style={{marginLeft: '60px', marginTop: '40px'}}>
 
         <Keyboard>
           <div style={{paddingLeft: '10px'}}>
@@ -125,10 +127,12 @@ const  LinnScalesModes = () => {
 
       </Keyboard>
 
-      // todo collect current values or default values and set all the sliders according to those
-      //
-      <Radio style={{margin:'30px'}} name="whatevs" choices={['current', 'default', 'explore']} defaultChoice="current" setChoice={actions.linn.tuningPref}/>
+       {/*todo collect current values or default values and set all the sliders according to those*/}
+
+      <div style={{marginLeft:'auto', marginRight:'auto', marginTop: '50px', width:'fit-content', border: '1px solid black'}}>
+      <Radio name="whatevs" choices={['current', 'default', 'explore']} defaultChoice="current" setChoice={actions.linn.tuningPref}/>
       Tuning preference is {tuningPref}
+      </div>
       <LinnCellDiv>
         {[0,1,2,3,4,5,6,7].reverse().map(y=>(<LinnRowDiv key={y}>
           {[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24].map(x=> {
