@@ -27,24 +27,18 @@
 };
 
 
- const majorPentatonics = Object.fromEntries(
-                              Object.entries(westernScales).map(
-                                ([k,v])=>
-                                  ([`Pentatonic Major ${k}`,
-                                    [ v[0], v[1], v[2]+v[3], v[4], v[5]+v[6]]
-                                  ])
-                              )
-                           );
+//https://en.wikipedia.org/wiki/Pentatonic_scale
+//  I reordered by rotation
+  const pentatonics = {
+    'Pentatonic Major':      [2,2,3,2,3], // opmit 4 7
+    'Pentatonic Suspended':  [2,3,2,3,2], // omit 3 6
+    'Pentatonic Blues Minor':[3,2,3,2,2], // omit 2 5
+    'Pentatonic Blues Major':[2,3,2,2,3],  // omit 3 7
+    'Pentatonic Minor':      [3,2,2,3,2], // omit 2/6
 
- const minorPentatonics = Object.fromEntries(
-  Object.entries(westernScales).map(
-    ([k,v])=>
-      ([`Pentatonic Minor ${k}`,
-        [ v[0]+v[1], v[2],v[3], v[4]+v[5], v[6]]
-      ])
-  )
-);
+  }
 
+  const wholeToneScales = {WholeTone: [2,2,2,2,2,2]};
 
  const bluesMajorHexatonics = {
   BluesMajor1: [2,1,1,3,2,3,],
@@ -78,13 +72,13 @@
 
 
 export const scaleOfScales = [
-  ...Object.entries(westernScales).map(([k,v])=>({name: k, ascending:v, count:7, cat: 'Western', subcat: ''})),
-  ...Object.entries(doubleHarmonicScales7).map(([k,v])=>({name: k, ascending:v, count:7, cat: 'DoubleHarmonic', subcat: ''})),
+  // ...Object.entries(westernScales).map(([k,v])=>({name: k, ascending:v, count:7, cat: 'Western', subcat: ''})),
+  // ...Object.entries(doubleHarmonicScales7).map(([k,v])=>({name: k, ascending:v, count:7, cat: 'DoubleHarmonic', subcat: ''})),
   ...Object.entries(jlitScales).map(([k,v])=>({name: k, ascending:v, count:7, cat: 'Jewish Liturgy', subcat: ''})),
-  ...Object.entries(bluesMajorHexatonics).map(([k,v])=>({name: k, ascending:v, count:6, cat: 'Blues', subcat: 'Major'})),
-  ...Object.entries(bluesMinorHexatonics).map(([k,v])=>({name: k, ascending:v, count:6, cat: 'Blues', subcat: 'Minor'})),
-  ...Object.entries(majorPentatonics).map(([k,v])=>({name: k, ascending:v, count:5, cat: 'Pentatonic', subcat: 'Major'})),
-  ...Object.entries(minorPentatonics).map(([k,v])=>({name: k, ascending:v, count:5, cat: 'Pentatonic', subcat: 'Minor'})),
+  ...Object.entries(wholeToneScales).map(([k,v])=>({name: k, ascending:v, count:6, cat: 'Wholetone', subcat: 'Wholetone'})),
+  // ...Object.entries(bluesMajorHexatonics).map(([k,v])=>({name: k, ascending:v, count:6, cat: 'Blues', subcat: 'Major'})),
+  // ...Object.entries(bluesMinorHexatonics).map(([k,v])=>({name: k, ascending:v, count:6, cat: 'Blues', subcat: 'Minor'})),
+  ...Object.entries(pentatonics).map(([k,v])=>({name: k, ascending:v, count:5, cat: 'Pentatonic', subcat: 'Major'})),
 ];
 
 
