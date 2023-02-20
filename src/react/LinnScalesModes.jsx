@@ -61,7 +61,8 @@ const whChars = [0, "h", "w", "w+h"]
 const patternToWh = a => a.map(v=>whChars[v]).join(', ');
 
 const keyText = (tonic, scaleMappedToKeys, i, pcArr) => {
-  if(i < tonic || i > tonic+11)
+
+  if(i < tonic || i > tonic+12)
     return '';
 
   const mod = i % 12;
