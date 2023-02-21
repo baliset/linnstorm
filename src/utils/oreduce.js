@@ -8,7 +8,7 @@
 export function oReduce(a,f,o={})
 {
   return a.reduce((accum,v)=>{
-    const [k,nv]=f(v);
+    const [k,nv]=f(v, accum);
     accum[k]= nv;
     return accum;
   }, o);
