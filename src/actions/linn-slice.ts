@@ -37,8 +37,7 @@ interface SliceConfig {
 function deriveScaleNotes(tonic:number, semitoneSteps:number[]):number[]
 {
   const tt =  [0, ...semitoneSteps].map((v,i,a)=>a.slice(0,i+1));
-  const result =  tt.map(aa=> aa.reduce((a,v) => (a+v)%12, tonic));
-  return result;
+  return tt.map(aa=> aa.reduce((a,v) => (a+v)%12, tonic));
 }
 
 function mapScaleToKeys(scaleNotes:number[]): number[]
@@ -52,17 +51,22 @@ function mapScaleToKeys(scaleNotes:number[]): number[]
   return t;
 }
 
+/*
 
-
+      scaleNotes: deriveScaleNotes(value, s.scaleSteps),
+      scaleMappedToKeys: mapScaleToKeys(deriveScaleNotes(value, s.scaleSteps))
+ */
+const firstTonic = 0;
 const initialState:LinnState = {
-  tonic: 0,
+  tonic: firstTonic,
+  scaleNotes: deriveScaleNotes(firstTonic, scaleOfScales[0].ascending ),
+  scaleMappedToKeys: mapScaleToKeys(deriveScaleNotes(firstTonic, scaleOfScales[0].ascending )),
+
   scaleCount: scaleOfScales.length,
   scaleIndex: 0,
   scaleName: scaleOfScales[0].name,
   scaleType: scaleOfScales[0].ascending.length,
   scaleSteps: scaleOfScales[0].ascending,
-  scaleNotes: deriveScaleNotes(0, scaleOfScales[0].ascending ),
-  scaleMappedToKeys: mapScaleToKeys(deriveScaleNotes(0, scaleOfScales[0].ascending )),
   baseMidiNote: 30,
   transposeSemis:0,
   midiView: {}, // nothing recorded
