@@ -1,10 +1,10 @@
-import React from 'react';
+import React, {useCallback} from 'react';
 import { Route, Routes, NavLink, useLocation } from "react-router-dom"
 
 import styled from 'styled-components';
 
 import {actions, useSelector} from './actions-integration';
-// import ReactJson from 'react-json-view';
+import {JSONTree} from 'react-json-tree';
 
 import {SnackbarProvider} from "notistack";
 
@@ -128,14 +128,15 @@ let messageCtr = 0;
 
 const Intro = () =>{
   const { local } = useSelector(s=>s);
-
+  const should = useCallback(()=>true,[]);
   return (
   <section>
-    <h1>App Info</h1>
-    <p>name: "{local.config.app.name}"</p>
-    <p>url: "{local.config.app.url}"</p>
-    <hr/>
-    {/*<ReactJson src={local.config}/>*/}
+    <h1>Configuration Info</h1>
+    <div style={{width:'fit-content'}}>
+      <JSONTree data={local.config}
+                hideRoot={true} sortObjectKeys={false}
+                shouldExpandNodeInitially={should} />
+    </div>
 
   </section>);
 }
