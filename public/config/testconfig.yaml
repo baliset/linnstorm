@@ -1,0 +1,15 @@
+# static and as yet unmodified parameters
+# that should be injected with both build time and deploy time changes via appropriate build and deployment time scripts
+
+app:
+  name: LinnStorm
+  url: static
+
+build:
+  time: 0
+  branch: static
+
+deploy:
+  time: 0
+  branch: static
+

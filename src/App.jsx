@@ -1,11 +1,10 @@
 import React from 'react';
 import { Route, Routes, NavLink, useLocation } from "react-router-dom"
 
-
 import styled from 'styled-components';
 
 import {actions, useSelector} from './actions-integration';
-
+// import ReactJson from 'react-json-view';
 
 import {SnackbarProvider} from "notistack";
 
@@ -127,7 +126,19 @@ let messageCtr = 0;
 
 
 
-const Intro = () => <section><h1>Intro</h1><p>Welcome</p></section>
+const Intro = () =>{
+  const { local } = useSelector(s=>s);
+
+  return (
+  <section>
+    <h1>App Info</h1>
+    <p>name: "{local.config.app.name}"</p>
+    <p>url: "{local.config.app.url}"</p>
+    <hr/>
+    {/*<ReactJson src={local.config}/>*/}
+
+  </section>);
+}
 
 
 midiSetup( actions.linn);
