@@ -3,7 +3,7 @@ import './main.css'
 import { createRoot } from 'react-dom/client';
 import {Config} from "./utils/config";
 import {actions, connectRootComponent} from './actions-integration';
-import {AboveApp} from './AboveApp';
+import {AboveApp} from './react/AboveApp';
 
 (async ()=>{
   try {

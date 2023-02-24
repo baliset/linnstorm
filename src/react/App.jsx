@@ -3,19 +3,19 @@ import { Route, Routes, NavLink, useLocation } from "react-router-dom"
 
 import styled from 'styled-components';
 
-import {actions, useSelector} from './actions-integration';
+import {actions, useSelector} from '../actions-integration';
 import {JSONTree} from 'react-json-tree';
 
 import {SnackbarProvider} from "notistack";
 
-import {NotifyWrapper} from "./react/NotifyWrapper";
-import {Modal} from "./react/Modal";
-import {SliceView} from "./react/SliceView";
-import {RtParameter} from "./react/RtParameters";
-import LinnScalesModes from "./react/LinnScalesModes";
-import {RtMidiview} from "./react/RtMidiview";
+import {NotifyWrapper} from "./NotifyWrapper";
+import {Modal} from "./Modal";
+import {SliceView} from "./SliceView";
+import {RtParameter} from "./RtParameters";
+import LinnScalesModes from "./LinnScalesModes";
+import {RtMidiview} from "./RtMidiview";
 
-import {midiSetup} from "./mymidi";
+import {midiSetup} from "../linnutils/mymidi.ts";
 
 const palette = {
       plum: '#4b54a1',
@@ -181,7 +181,7 @@ const  App = () => {
               <div style={{float:'right', display: 'inline-block', marginRight:'20px'}}>
                 <a style={{color:'white', textDecoration:'none', font: 'Roboto', }}
                 href="https://www.netlify.com">
-                <span style={{verticalAlign: 'top', fontStyle: 'italic'}}>deployed via</span> <img height="20px"  src="/netlify/full-logo-dark.svg" alt="Netlify"/></a>
+                <span style={{verticalAlign: 'top', fontStyle: 'italic'}}>deployed via</span> <img height="20px" src="/netlify/full-logo-dark.svg" alt="Netlify"/></a>
               </div>
 
             </Navbar>

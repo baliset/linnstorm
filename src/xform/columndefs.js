@@ -1,6 +1,6 @@
 import {tsToDate, tsToTime} from "./datexforms";
 import {isNumber} from "luxon/src/impl/util";
-import {currentLinnParams} from "../mymidi";
+import {currentLinnParams} from "../linnutils/mymidi";
 import {assignments, arpDir, tempoValues, rowOffsets, animations} from "../linnutils/linn-expansion"
 
 const vgTsToTime = (params)=>isNumber(params.value)? tsToTime(params.value):undefined;

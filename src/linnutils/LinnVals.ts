@@ -1,4 +1,4 @@
-import {oReduce} from './utils/oreduce';
+import {oReduce} from '../utils/oreduce';
 
 type LinnValue = {nrpn: number; value: number; };  // this is what we can send and receive, it is associated nrpn as key  to specific LinnParam;
 

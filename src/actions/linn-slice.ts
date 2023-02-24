@@ -1,4 +1,4 @@
-import {scaleOfScales} from '../scales';
+import {scaleOfScales} from '../linnutils/scales';
 
 
 interface TuningSubstate {

@@ -1,5 +1,5 @@
 import React from 'react';
-import {interrogate, test} from "../mymidi";
+import {interrogate, test} from "../linnutils/mymidi";
 import {Btn, RBtn} from './Btn';
 
 const  LinnControl = ({rows}) => {

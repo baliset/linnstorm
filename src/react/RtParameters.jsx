@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import {MyGrid} from "./MyGrid";
 import LinnControl from "./LinnControl";
 import { linnPropColumnDefs} from "../xform/columndefs";
-import {currentLinnParams, rowData} from "../mymidi";
+import {currentLinnParams, rowData} from "../linnutils/mymidi";
 
 const palette = {
       plum: '#4b54a1',
