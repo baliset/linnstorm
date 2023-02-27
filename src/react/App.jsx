@@ -12,7 +12,7 @@ import {NotifyWrapper} from "./NotifyWrapper";
 import {Modal} from "./Modal";
 import {SliceView} from "./SliceView";
 import {RtParameter} from "./RtParameters";
-import LinnScalesModes from "./LinnScalesModes";
+import RtTuning from "./RtTuning";
 import {RtMidiview} from "./RtMidiview";
 
 import {midiSetup} from "../linnutils/mymidi.ts";
@@ -175,7 +175,7 @@ const  App = () => {
               <div style={{ margin: 'auto', width: '50%', display: 'inline-block'}}>
               <MyNavLink curPath={location.pathname} to="/">Intro</MyNavLink>
               <MyNavLink curPath={location.pathname} to="/params">Parameters</MyNavLink>
-              <MyNavLink curPath={location.pathname} to="/tuning">Scales & Modes</MyNavLink>
+              <MyNavLink curPath={location.pathname} to="/tuning">Tuning</MyNavLink>
               <MyNavLink curPath={location.pathname} to="/midi">Midi View</MyNavLink>
               </div>
               <div style={{float:'right', display: 'inline-block', marginRight:'20px'}}>
@@ -209,7 +209,7 @@ const  App = () => {
                   <Routes>
                     <Route path="/" element={<Intro/>}/>
                     <Route path="/params" element={<RtParameter/>}/>
-                    <Route path="/tuning" element={<LinnScalesModes/>}/>
+                    <Route path="/tuning" element={<RtTuning/>}/>
                     <Route path="/midi" element={<RtMidiview/>}/>
 
                   </Routes>

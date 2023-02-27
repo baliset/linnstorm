@@ -80,7 +80,7 @@ const nameThatPitchClass = ( v, pcArray) => pcArray[v%12];
 
 
 // todo pass in actual properties to visualize current configuration as well as experiment with others
-const  LinnScalesModes = () => {
+const  RtTuning = () => {
     const {
       linn:  {tonic, scaleIndex, scaleName, scaleType, scaleCount, scaleSteps,
       scaleNotes, scaleMappedToKeys, transposeSemis, baseMidiNote, tuningOffsetSemis,
@@ -151,4 +151,4 @@ const  LinnScalesModes = () => {
   );
 };
 
-export default LinnScalesModes;
+export default RtTuning;
