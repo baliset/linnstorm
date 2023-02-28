@@ -1,3 +1,5 @@
+import {cumulate} from '../utils/cumulate';
+
 export type escale = string[];
 export type modeName = string|string[];
 export type SemisType = number[];
@@ -197,7 +199,6 @@ export function projectSemis(semis:SemisType): SemisIndex  {
     walkingIndex += v;
     arr[walkingIndex] = walkingIndex;
   });
-  console.info(`projectSemis for [${semis.join(',')}] = [${arr.join(',')}]`);
   return arr;
 }
 
@@ -216,22 +217,36 @@ const modeIt = (modeIndex:number, arr:any[]) => {
 const romanNumerals = ['I','II', 'III', 'IV', 'V', 'VI', 'VII'];
 const romanize = (arr:any[],index:number)=>(index>0 || arr.length>1)?` (Mode ${romanNumerals[index]})`:'';
 
-export function expandScales(): any[]
+export type ExpandedScale = {
+  name:string,
+  semis:SemisType,
+  semisToIndices:number[],
+  projectedIndices:number[],
+  count:number,
+  perTonicScales:escale[]
+};
+
+export function expandScales(): ExpandedScale[]
 {
   const result:any[] = [];
   unexpanded.forEach((nscale:NScale)=> {
-    const {modes, scales,prefix} = nscale;
+    const {modes, scales, prefix, semis} = nscale;
+    // semis looks like 2,2,1,2,2,2,1
+    // semisToIndices looks like 0,2,4,5,7,9,11,12
+    // projected looks like [0,-1, 2,-1, 4...etc.]
+
+    const semisToIndices:number[] = cumulate([0,...semis]);
+    const projectedIndices = projectSemis(semis);
     const count = scales[0].length - 1; // how many unique notes in scale 7,6, or 5
 
     modes.forEach((mode, index)=>{
-      const nscales = scales.map(scale=>modeIt(index,scale));
-      const modename = (typeof mode === 'string')?mode: mode.join('/');
+      const perTonicScales = scales.map(scale=>modeIt(index,scale));
+      const modename = (typeof mode === 'string')? mode: mode.join('/');
       const pfx = prefix.length?
         (modename.length? `${prefix}-`:`${prefix}`):
         '';
       const name = `${pfx}${modename}${romanize(modes,index)}`;
-      const ascending:number[] = []; // todo
-      result.push({name, ascending, count, cat:pfx, subcat: '', nscales})
+      result.push({name, semis, semisToIndices, projectedIndices, count, perTonicScales})
     });
 
   });
@@ -239,12 +254,24 @@ export function expandScales(): any[]
   return result;
 }
 
-// export const scaleOfScales = [
-//   ...Object.entries(westernScales).map(([k,v])=>({name: k, ascending:v, count:7, cat: 'Western', subcat: ''})),
-//   ...Object.entries(doubleHarmonicScales7).map(([k,v])=>({name: k, ascending:v, count:7, cat: 'DoubleHarmonic', subcat: ''})),
-//   ...Object.entries(jlitScales).map(([k,v])=>({name: k, ascending:v, count:7, cat: 'Jewish Liturgy', subcat: ''})),
-//   ...Object.entries(wholeToneScales).map(([k,v])=>({name: k, ascending:v, count:6, cat: 'Wholetone', subcat: 'Wholetone'})),
-//   ...Object.entries(bluesMajorHexatonics).map(([k,v])=>({name: k, ascending:v, count:6, cat: 'Blues', subcat: 'Major'})),
-//   ...Object.entries(bluesMinorHexatonics).map(([k,v])=>({name: k, ascending:v, count:6, cat: 'Blues', subcat: 'Minor'})),
-//   ...Object.entries(pentatonics).map(([k,v])=>({name: k, ascending:v, count:5, cat: 'Pentatonic', subcat: 'Major'})),
-// ];
+
+const prArr = (arr:any[])=>`[${arr.join(',')}]`;
+
+export function twelveFor(tonic:number, exSc:ExpandedScale): escale
+{
+  const {perTonicScales, semis} = exSc;
+  const scale = perTonicScales[tonic];
+
+
+  const arr:escale = Array.from(new Array(12).fill('-'));
+
+  let walkingIndex = 0;
+  semis.slice(0,-1).forEach((v,i)=>{
+    arr[walkingIndex] = scale[i];
+    walkingIndex += v;
+  });
+
+  console.log(`twelveFor ${prArr(arr)}`);
+  return arr;
+}
+
