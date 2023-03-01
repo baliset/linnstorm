@@ -247,13 +247,17 @@ MIDIVal.connect().then((accessObject:IMIDIAccess) => {
   });
 
   MIDIVal.onInputDeviceConnected((device:any) => {
-    console.log(`Input Device Connected ${details(device)}`);
+    const {id, name, manufacturer} = device;
+    console.log(`Input Device Connected ${details(device)}`, device);
+
+    midiActions.connect({id, name, manufacturer});
   });
 
   MIDIVal.onInputDeviceDisconnected((device:any) => {
+    const {id} = device;
+    midiActions.disconnect(id);
     console.log(`Input Device Disconnected  ${details(device)}`);
   });
-
 
 });
 
