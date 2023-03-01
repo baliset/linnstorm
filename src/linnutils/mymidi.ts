@@ -3,7 +3,7 @@ import {MidiCommand} from "@midival/constants";
 import {paramNumToName} from "./LinnVals";
 import {BrowserMIDIOutput} from '@midival/core/dist/wrappers/outputs/BrowserMIDIOutput';
 import {BrowserMIDIInput} from '@midival/core/dist/wrappers/inputs/BrowserMIDIInput';
-import {allParams} from './LinnVals';
+
 import {ccNumbers, ccIsLsbForCcMinus32, ccIsOnOff} from './cc-numbers';
 
 type MidiInOrOut = BrowserMIDIInput|BrowserMIDIOutput;
@@ -19,7 +19,6 @@ let midiInputs:IMIDIInput[];
 let midiOutputs:IMIDIOutput[];
 let linnOut:IMIDIOutput;
 let linnIn:IMIDIInput;
-let linnInId;
 
 
 const kLinnStrument = 'LinnStrument MIDI';
@@ -29,7 +28,7 @@ interface MyNrpnMsg {
   f:number;
   s:number;
   t:number;
-};
+}
 
 interface MyMidiEvent {
   timeStamp:number;
@@ -72,11 +71,7 @@ class NRPNAccept {
 
           // store the result
           currentLinnParams[pNum]=pVal;
-          //todo this garbage doesn't help
-          rowData.some((o, index, arr)=> {
-            if (o.nrpn === pNum)
-              arr[index] = {...o, c:pVal};
-          });
+          actions.updateParamView(pNum, 'c', pVal);
 
           console.info(`Linn[${pNum.toString().padStart(3, ' ')}] = ${pVal.toString().padStart(5,' ')}:  ${pName}`);
           this.nrpnMsg = [];
@@ -180,10 +175,10 @@ const parseCommand = (arr:number[]): Partial<ParsedMidi> => {
 
 const hexify = (v:number)=>v?.toString(16)?.padStart(2,'0')  ;
 
+let actions:any;
 export const midiSetup = (midiActions:any) => {
 
-  let nprnMsg:MyNrpnMsg[] = [];
-  let nprnCtr = 0;
+  actions = midiActions;
 
   function onAnyMidiMessage(event:MyMidiEvent) {
     const {type, name:src} = (event.currentTarget as any);
@@ -198,9 +193,10 @@ export const midiSetup = (midiActions:any) => {
      // todo this is causing too many updates, it should really store locally and update n times a second
      // also produce fewer actions
      midiActions.updateMidiView({...parsed, id: ++id, time, dir, src, hex: arr.map(hexify).join(' ')})
-     if (event?.currentTarget?.id === linnIn?.id)
-       onLinnMidiMessage(event);
    }
+   if (event?.currentTarget?.id === linnIn?.id)
+    onLinnMidiMessage(event);
+
   }
 
   function onLinnMidiMessage(event:MyMidiEvent) {
@@ -293,15 +289,11 @@ const ccClearPersist=24;
 const ccReadVal=299;
 
 
-type LinnParam = {param: number, value: number; desc:string, key:string }
 
 export type ParamSet = Record<number, number>;
 
 export const currentLinnParams:ParamSet = {};
 
-export let rowData = allParams;
-
-export let midiRowData:any[] = [];
 
 function sendNRPN(paramNum:number,value:number)
 {

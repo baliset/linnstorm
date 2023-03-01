@@ -8,7 +8,7 @@ type LinnParamType = {cat:'Global'|'PerSplit'|'Device'; subcat?:'PerNote'|'PerCh
 type LinnGlobalType ={cat:'Global'|'Device';}
 type LinnSubCat = {}
 
-type LinnParam = Partial<LinnParamType> & {nrpn: number, min:number, max:number; desc:string, key?:string }
+export type LinnParam = Partial<LinnParamType> & {nrpn: number, min:number, max:number; desc:string, key?:string }
 type LinnBoolParam = LinnParam & {min:0, max:1};
 
 type LinnSplitParam = LinnParam & LinnSplit;  // a LinnSplitParam must specify which side is meant, left or right
