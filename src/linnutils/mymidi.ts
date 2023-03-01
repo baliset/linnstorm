@@ -79,8 +79,8 @@ class NRPNAccept {
         }
         break;
     } // end switch
-    if(nrpnMsg.length > len)
-      console.info(`+msg ${nrpnMsg.length}`);
+    // if(nrpnMsg.length > len)
+    //   console.info(`+msg ${nrpnMsg.length}`);
   }
 
 }
@@ -215,8 +215,10 @@ MIDIVal.connect().then((accessObject:IMIDIAccess) => {
   console.log("Outputs", midiOutputs);
 
   midiOutputs.map((bo:any)=>{
-    if(isLinn(bo))
+    if(isLinn(bo)) {
       linnOut = bo.output;
+      interrogate(); // automatically pull values when we see the connection to a Linnstrument
+    }
   });
 
    midiInputs.map((bi:any)=>{

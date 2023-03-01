@@ -179,8 +179,11 @@ export const deviceSettings = [
 //todo why is type LinnParam[] not working here
 export const allParams:any[] = [...deviceSettings, ...allGlobals, ...allSplitParams].map(o=>({...o, a:'', b:'', c:'', d:''}));
 
+
 // lookup a key by nrpn, or by key
 export const allParamsByNrpn = oReduce(allParams,(o:LinnParam)=>[o.nrpn,o], {});
+
+
 export const allParamsByKey  = oReduce(allParams,(o:LinnParam)=>[o.key, o], {});
 
 //==============
