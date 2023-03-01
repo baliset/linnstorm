@@ -70,7 +70,7 @@ const  RtTuning = () => {
     const {
       linn:  {tonic, scaleIndex, scaleName, scaleType, scaleCount, scaleSteps,
       scaleNotes, scaleNoteNames, twelve, keyboardMapped,
-      transposeSemis, baseMidiNote, tuningOffsetSemis,deviceColumns,
+      transposeSemis, baseMidiNote, tuningOffsetSemis,deviceColumns,scaleFilterText,
       tuningSubState: {tuningPref}
       },
       } = useSelector(s=>s);
@@ -93,7 +93,7 @@ const  RtTuning = () => {
       <div style={{marginLeft: '60px', marginTop: '40px'}}>
 
         <Keyboard>
-          <div style={{paddingLeft: '10px'}}>
+          <div style={{paddingLeft: '10px', color:'white'}}>
 
             <SLabel>Row Tuning Offset: {tuningOffsetSemis} semitones</SLabel>
             <TSlider  color="orange" name="Tuning" type="range" min={0} max={12} defaultValue={ tuningOffsetSemis } onChange={ changeTu }/>
@@ -104,6 +104,10 @@ const  RtTuning = () => {
 
             <SLabel>Tonic on {keyboardMapped[tonic]}</SLabel>
             <TSlider  color="red" name="Tonic" type="range" min="0" max="11" defaultValue={ tonic } onChange={ changeT }/>
+            <hr/>
+            Scale Filter: <input id="scfilter" name="scfilter" type="text" value={scaleFilterText} onChange={event => actions.linn.filterScale(event.target.value)}/>
+            <span style={{color: 'white'}}> includes {scaleCount} scales</span>
+            <br/>
 
             <SLabel>Scale Selection:  ({scaleType} notes: {patternToWh(scaleSteps)}) {scaleName}</SLabel>
             <TSlider  color="blue" name="Scale" type="range" min="0" max={scaleCount-1} defaultValue={ scaleIndex } onChange={ changeSc }/>

@@ -100,7 +100,7 @@ const flamenco:NScale = {
 // 3. phrygian dominant aka Freygish, Spanish gypsy or spanish Phrygian
 const hungarianminor:NScale = {
   prefix: '',
-  modes: ['Hungarian Minor','Oriental','Ionian ♯2 ♯5','Locrian 𝄫3 𝄫7','Double harmonic major','Lydian ♯2 ♯6','Ultraphryigian'],
+  modes: ['Hungarian Minor','Oriental','Ionian ♯2 ♯5','Locrian 𝄫3 𝄫7','Double harmonic major','Lydian ♯2 ♯6','Ultraphrygian'],
   semis:[2,1,3,1,1,3,1],
   scales: [
     ['C',  'D',  'E♭', 'F♯', 'G',  'A♭', 'B',  'C' ],

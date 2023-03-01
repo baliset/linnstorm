@@ -1,4 +1,4 @@
-import {expandScales, escale, twelveFor } from '../theory/scales-generated'
+import {expandScales, escale, twelveFor, ExpandedScale} from '../theory/scales-generated'
 
 interface TuningSubstate {
   tuningPref: 'current'|'default'|'explore'; // what should linnstrument show, the defaults, current settings, or explore a new one
@@ -27,6 +27,8 @@ export type LinnState = ScaleInfo & {
   midiView:Record<number, Record<string, any>>;
   tuningOffsetSemis:number; // 5 = fourths
   tuningSubState:TuningSubstate;
+  filteredScales:ExpandedScale[];
+  scaleFilterText:string;
 }
 
 type LinnCreator = (s:LinnState,...rest: any)=>unknown;
@@ -70,15 +72,15 @@ const firstTonic = 0;
 const scaleIndex = 0;
 
 
-function partial(tonic:number, scaleIndex:number) :ScaleInfo
+function genScaleInfo(tonic:number, scaleIndex:number, filteredScales:ExpandedScale[]) :ScaleInfo
 {
-  const {count:scaleType, name:scaleName, semis:scaleSteps,perTonicScales} =  expanded[scaleIndex];
+  const {count:scaleType, name:scaleName, semis:scaleSteps,perTonicScales} =  filteredScales[scaleIndex];
 
   const scaleNotes        =  deriveScaleNotes(firstTonic, scaleIndex);
   const scaleMappedToKeys = mapScaleToKeys(scaleNotes);
   const scaleNoteNames = perTonicScales[tonic];
 
-  const twelve = twelveFor(tonic, expanded[scaleIndex]);
+  const twelve = twelveFor(tonic, filteredScales[scaleIndex]);
   const keyboardMapped:string[] = new Array(24).fill('');
   for(let i = 0; i < 12; ++i)
     keyboardMapped[tonic+i] = twelve[i];
@@ -99,7 +101,7 @@ function partial(tonic:number, scaleIndex:number) :ScaleInfo
 
 const initialState:LinnState = {
   tonic: firstTonic,
-  ...partial(firstTonic,scaleIndex),
+  ...genScaleInfo(firstTonic,scaleIndex,expanded),
   deviceColumns:25,
   scaleCount: expanded.length,
   baseMidiNote: 30,
@@ -107,7 +109,8 @@ const initialState:LinnState = {
   midiView: {}, // nothing recorded
   tuningOffsetSemis: 5, //
   tuningSubState: {tuningPref: 'explore'},
-
+  filteredScales:expanded,
+  scaleFilterText:''
 };
 
 
@@ -122,18 +125,19 @@ const creators:LinnCreators = {
   transposeSemis:(transposeSemis)=>({transposeSemis}),
   tuningOffsetSemis:(tuningOffsetSemis)=>({tuningOffsetSemis}),
   tuningPref: (tuningPref)=>({tuningPref}),
+  filterScale:(scaleFilterText)=>({scaleFilterText})
 };
 
 const reducers:LinnReducers = {
     tonic: (s, {value}) => ({
       ...s,
       tonic: value,
-      ...partial(value, s.scaleIndex)
+      ...genScaleInfo(value, s.scaleIndex, s.filteredScales)
     }),
     scale: (s, {value}) => {
       return {
         ...s,
-        ...partial(s.tonic,value),
+        ...genScaleInfo(s.tonic,value, s.filteredScales),
       }
     },
     clearMidiView: (s) => ({...s, midiView: {}}),
@@ -141,6 +145,28 @@ const reducers:LinnReducers = {
     transposeSemis:(s, {transposeSemis})=>({...s, transposeSemis}),
     tuningOffsetSemis:(s, {tuningOffsetSemis})=>({...s, tuningOffsetSemis}),
     tuningPref: (s, {tuningPref})=>({...s, tuningSubState: {...s.tuningSubState, tuningPref}}),
+    filterScale:(s, {scaleFilterText})=>{
+
+      let filteredScales = expanded.filter(o=>o.name.toUpperCase().includes(scaleFilterText.toUpperCase()));
+
+      while(!filteredScales.length) {
+        scaleFilterText = scaleFilterText.slice(0,-1);
+        filteredScales = expanded.filter(o=>o.name.toUpperCase().includes(scaleFilterText.toUpperCase()))
+      }
+
+       [expanded[0]];
+      const scaleCount = filteredScales.length;
+      const scaleIndex = 0;
+      return {
+        ...s,
+        ...genScaleInfo(s.tonic,scaleIndex, filteredScales),
+        scaleFilterText,
+       scaleIndex, // reset scale index when filter changes
+       scaleCount,
+       filteredScales
+    };
+
+    }
 
 };
 
