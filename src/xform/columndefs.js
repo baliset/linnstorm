@@ -130,6 +130,17 @@ function vgCurrent(p) {
 
 }
 
+
+function vgDiffer(from, to) {
+    return function(p) {
+        const r = p?.data;
+        if(r)
+            return r[from] === r[to]? 'same': 'diff'
+        return '?';
+    }
+
+}
+
 function vgDiffCurrent(p) {
     const r = p?.data;
     if(r)
@@ -137,6 +148,11 @@ function vgDiffCurrent(p) {
 
     return '?';
 }
+
+
+
+
+
 function vgDiffDefaults(p) {
     const r = p?.data;
     if(r)
@@ -153,12 +169,12 @@ const linnPropColumns = [
     {f: 'side', maxWidth: 75},
     {f:'subcat',  maxWidth:85},
 
-    {f:'a',  maxWidth:85, comparator:numberSort, editable:true},
-    {f:'b',  maxWidth:185,comparator:numberSort, valueFormatter:vfExpander},
-    {f:'b-d',  maxWidth:85, valueGetter:vgDiffDefaults},
+    {f:'a',  maxWidth:85, comparator:numberSort, editable:true, cellRenderer: 'linnParamRenderer'},
+    {f:'b',  maxWidth:185,comparator:numberSort, valueFormatter:vfExpander, cellRenderer: 'linnParamRenderer'},
+    {f:'b-d',  maxWidth:85, valueGetter:vgDiffer('b', 'd')},
 
-    {f:'c',  maxWidth:185, valueGetter:vgCurrent, comparator:numberSort, valueFormatter:vfExpander},
-    {f:'c-d',  maxWidth:85, valueGetter:vgDiffCurrent},
+    {f:'c',   maxWidth:185, valueGetter:vgCurrent, comparator:numberSort, valueFormatter:vfExpander, cellRenderer: 'linnParamRenderer'},
+    {f:'c-d', maxWidth:85, valueGetter:vgDiffer('c', 'd')},
 
     {f:'d',  maxWidth:185, comparator:numberSort, cellRenderer: 'linnParamRenderer'},
 
