@@ -1,21 +1,29 @@
-import {scaleOfScales} from '../linnutils/scales';
-
+import {expandScales, escale, twelveFor } from '../theory/scales-generated'
 
 interface TuningSubstate {
   tuningPref: 'current'|'default'|'explore'; // what should linnstrument show, the defaults, current settings, or explore a new one
 
  }
-export interface LinnState {
-  baseMidiNote: 30;  // this is a fixed note numbner
-  transposeSemis:number;
-  tonic: number;
-  scaleCount: number;  // total number of scales
+
+
+export type ScaleInfo = {
   scaleIndex: number;
   scaleName: string;
   scaleType: number;
   scaleSteps: number[];
   scaleNotes: number[];
-  scaleMappedToKeys: number[]; // given 12 keys starting at C natural, which numbers are they if any in order of the scale?
+  scaleNoteNames:escale;
+  scaleMappedToKeys: number[];  // given 12 keys starting at C natural, which numbers are they if any in order of the scale?
+  keyboardMapped:string[];      // an array of twenty four keys in ui that shows the current scale on white and black keys
+  twelve:string[];
+}
+
+export type LinnState = ScaleInfo & {
+  scaleCount: number;  // total number of scales
+  deviceColumns:number;
+  baseMidiNote: 30;  // this is a fixed note numbner
+  transposeSemis:number;
+  tonic: number;
   midiView:Record<number, Record<string, any>>;
   tuningOffsetSemis:number; // 5 = fourths
   tuningSubState:TuningSubstate;
@@ -33,10 +41,12 @@ interface SliceConfig {
   initialState: LinnState;
 }
 
+const expanded = expandScales();
 
-function deriveScaleNotes(tonic:number, semitoneSteps:number[]):number[]
+function deriveScaleNotes(tonic:number, scaleIndex:number):number[]
 {
-  const tt =  [0, ...semitoneSteps].map((v,i,a)=>a.slice(0,i+1));
+  const {semis} = expanded[scaleIndex];
+  const tt =  [0, ...semis].map((v,i,a)=>a.slice(0,i+1));
   return tt.map(aa=> aa.reduce((a,v) => (a+v)%12, tonic));
 }
 
@@ -57,16 +67,41 @@ function mapScaleToKeys(scaleNotes:number[]): number[]
       scaleMappedToKeys: mapScaleToKeys(deriveScaleNotes(value, s.scaleSteps))
  */
 const firstTonic = 0;
+const scaleIndex = 0;
+
+
+function partial(tonic:number, scaleIndex:number) :ScaleInfo
+{
+  const {count:scaleType, name:scaleName, semis:scaleSteps,perTonicScales} =  expanded[scaleIndex];
+
+  const scaleNotes        =  deriveScaleNotes(firstTonic, scaleIndex);
+  const scaleMappedToKeys = mapScaleToKeys(scaleNotes);
+  const scaleNoteNames = perTonicScales[tonic];
+
+  const twelve = twelveFor(tonic, expanded[scaleIndex]);
+  const keyboardMapped:string[] = new Array(24).fill('');
+  for(let i = 0; i < 12; ++i)
+    keyboardMapped[tonic+i] = twelve[i];
+  keyboardMapped[tonic+12] = twelve[0];
+
+  return {
+    scaleNotes,
+    scaleNoteNames,
+    scaleMappedToKeys,
+    scaleIndex,
+    scaleName,
+    scaleType,
+    scaleSteps,
+    keyboardMapped,
+    twelve,
+  };
+}
+
 const initialState:LinnState = {
   tonic: firstTonic,
-  scaleNotes: deriveScaleNotes(firstTonic, scaleOfScales[0].ascending ),
-  scaleMappedToKeys: mapScaleToKeys(deriveScaleNotes(firstTonic, scaleOfScales[0].ascending )),
-
-  scaleCount: scaleOfScales.length,
-  scaleIndex: 0,
-  scaleName: scaleOfScales[0].name,
-  scaleType: scaleOfScales[0].ascending.length,
-  scaleSteps: scaleOfScales[0].ascending,
+  ...partial(firstTonic,scaleIndex),
+  deviceColumns:25,
+  scaleCount: expanded.length,
   baseMidiNote: 30,
   transposeSemis:0,
   midiView: {}, // nothing recorded
@@ -93,21 +128,12 @@ const reducers:LinnReducers = {
     tonic: (s, {value}) => ({
       ...s,
       tonic: value,
-      scaleNotes: deriveScaleNotes(value, s.scaleSteps),
-      scaleMappedToKeys: mapScaleToKeys(deriveScaleNotes(value, s.scaleSteps))
+      ...partial(value, s.scaleIndex)
     }),
     scale: (s, {value}) => {
-      const sc = scaleOfScales[value];
-      const {ascending: scaleSteps, name: scaleName} = sc;
-      const scaleNotes = deriveScaleNotes(s.tonic, scaleSteps);
       return {
         ...s,
-        scaleIndex: value,
-        scaleName,
-        scaleType: scaleSteps.length,
-        scaleSteps,
-        scaleNotes,
-        scaleMappedToKeys: mapScaleToKeys(scaleNotes)
+        ...partial(s.tonic,value),
       }
     },
     clearMidiView: (s) => ({...s, midiView: {}}),

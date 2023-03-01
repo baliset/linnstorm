@@ -21,9 +21,9 @@ const western:NScale = {
     ['C',  'D',  'E',  'F',  'G',  'A',  'B',  'C' ],
     ['D♭', 'E♭', 'F',  'G♭', 'A♭', 'B♭', 'C',  'D♭'],
     ['D',  'E',  'F♯', 'G',  'A',  'B',  'C♯', 'D' ],
-    ['E♭', 'F',  'G', ' A♭', 'B♭', 'C',  'D',  'E♭'],
+    ['E♭', 'F',  'G',  'A♭', 'B♭', 'C',  'D',  'E♭'],
     ['E',  'F♯', 'G♯', 'A',  'B',  'C♯', 'D♯', 'E' ],
-    ['F',  'G',  'A', ' B♭', 'C',  'D',  'E',  'F' ],
+    ['F',  'G',  'A',  'B♭', 'C',  'D',  'E',  'F' ],
     ['G♭', 'A♭', 'B♭', 'C♭', 'D♭', 'E♭', 'F',  'G♭'],
     ['G',  'A',  'B',  'C',  'D',  'E',  'F♯', 'G' ],
     ['A♭', 'B♭', 'C',  'D♭', 'E♭', 'F',  'G',  'A♭'],
@@ -202,16 +202,20 @@ export function projectSemis(semis:SemisType): SemisIndex  {
   return arr;
 }
 
+const rotateOneLeft = (arr:any[])=>[...arr.slice(1), ...arr.slice(0,1)];
+export const rotateNRight =(arr:any[],n:number)=>[...arr.slice(arr.length-n, arr.length), ...arr.slice(0, arr.length-n)];
+export const rotateNLeft = (arr:any[],n:number)=>[...arr.slice(n, arr.length), ...arr.slice(0, n)];
 const rotate = (arr:any[])=>[...arr.slice(1), ...arr.slice(0,1)];
+
 const modeIt = (modeIndex:number, arr:any[]) => {
-  let result = arr.slice(0,-1); // last item is wrong
+  let result = arr;
 
 
   for(let i = 0; i < modeIndex; ++i)
     result = rotate(result);
 
-  // console.log(`mode ${modeIndex}`, result;)
-  return [...result, result[0]];
+  console.log(`modeitt ${modeIndex}`, result, arr);
+  return result;
 }
 
 const romanNumerals = ['I','II', 'III', 'IV', 'V', 'VI', 'VII'];
@@ -226,21 +230,42 @@ export type ExpandedScale = {
   perTonicScales:escale[]
 };
 
+// the perTonicScales need to be rotated the inverse of the mode index
+// IOW, ionic is mode index 0 (aka I), and Dorian is index 1 (aka mode II)
+// since ionic semis is 2,2,1,2,2,2,1 moving from zero to mode index 1 means
+// that the last two arrays need to be rotated to be first two arrays, since they naturally start two semitones later
+
 export function expandScales(): ExpandedScale[]
 {
   const result:any[] = [];
   unexpanded.forEach((nscale:NScale)=> {
-    const {modes, scales, prefix, semis} = nscale;
+    const {modes, scales, prefix, semis:oSemis} = nscale;
     // semis looks like 2,2,1,2,2,2,1
     // semisToIndices looks like 0,2,4,5,7,9,11,12
     // projected looks like [0,-1, 2,-1, 4...etc.]
 
-    const semisToIndices:number[] = cumulate([0,...semis]);
-    const projectedIndices = projectSemis(semis);
     const count = scales[0].length - 1; // how many unique notes in scale 7,6, or 5
 
+
+    const cumOSemis = cumulate([0,...oSemis]); // use this to rotate scales consistent to same tonic
+
     modes.forEach((mode, index)=>{
-      const perTonicScales = scales.map(scale=>modeIt(index,scale));
+
+      const semis = rotateNLeft(oSemis, index);
+      const semisToIndices:number[] = cumulate([0,...semis]);
+
+      const temp = scales.map(scale=>{
+        const slimScale = scale.slice(0,-1);
+        const rotated = rotateNLeft(slimScale, index);
+        return [...rotated, rotated[0]];
+        // return modeIt(index,scale)
+
+      });
+
+      const perTonicScales = rotateNRight(temp,cumOSemis[index]);
+
+      const projectedIndices = projectSemis(semis);
+
       const modename = (typeof mode === 'string')? mode: mode.join('/');
       const pfx = prefix.length?
         (modename.length? `${prefix}-`:`${prefix}`):
@@ -254,24 +279,17 @@ export function expandScales(): ExpandedScale[]
   return result;
 }
 
-
-const prArr = (arr:any[])=>`[${arr.join(',')}]`;
-
 export function twelveFor(tonic:number, exSc:ExpandedScale): escale
 {
   const {perTonicScales, semis} = exSc;
   const scale = perTonicScales[tonic];
 
-
-  const arr:escale = Array.from(new Array(12).fill('-'));
-
+  const arr:escale = Array.from(new Array(12).fill(''));
   let walkingIndex = 0;
-  semis.slice(0,-1).forEach((v,i)=>{
+  semis.forEach((v,i)=>{
     arr[walkingIndex] = scale[i];
     walkingIndex += v;
   });
-
-  console.log(`twelveFor ${prArr(arr)}`);
   return arr;
 }
 
