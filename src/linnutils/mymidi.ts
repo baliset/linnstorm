@@ -9,7 +9,8 @@ import {ccNumbers, ccIsLsbForCcMinus32, ccIsOnOff} from './cc-numbers';
 type MidiInOrOut = BrowserMIDIInput|BrowserMIDIOutput;
 
 const details = (device:MidiInOrOut) => {
-  return `${device.name}/${device.id}`;
+  const modifiedId = Number(device.id).toString(16);
+  return `${device.name}/${device.id}/${modifiedId}`;
 }
 
 
@@ -144,6 +145,13 @@ const midiparse:Record<number,any> = {
 
 type ParsedMidi = {cmd:string, ch?:number; note?:number, value:number, type?:string};
 
+type Recordable = Record<string, boolean>;
+let recordable:Recordable = {};
+
+export function resetRecordable(rec:Recordable)
+{
+  recordable = rec;
+}
 const parseCommand = (arr:number[]): Partial<ParsedMidi> => {
   const masked = arr[0] & 0xf0;
   const maskedCmd = (masked === 0xf0)? arr[0]: masked ;      // expand the command beyond mask if 0xFN
@@ -178,21 +186,21 @@ export const midiSetup = (midiActions:any) => {
   let nprnCtr = 0;
 
   function onAnyMidiMessage(event:MyMidiEvent) {
-      console.info(`midi message`, event)
+    const {type, name:src} = (event.currentTarget as any);
 
-    const {timeStamp:time} = event;
-    const {type, name} = (event.currentTarget as any);
+   if(recordable[src]) {
+     const {timeStamp:time} = event;
 
-    const dir = type==='input'?'out':'in';
-    const arr = Array.from(event.data);
+     const dir = type === 'input' ? 'out' : 'in';
+     const arr = Array.from(event.data);
 
-    const parsed = parseCommand(arr); // parse content of message, derive other data from event
-    // todo this is causing too many updates, it should really store locally and update n times a second
-    // also produce fewer actions
-    midiActions.updateMidiView({...parsed, id: ++id, time, dir, src: name, hex: arr.map(hexify).join(' ') })
-    // midiRowData.push();
-    if(event?.currentTarget?.id === linnIn?.id)
-      onLinnMidiMessage(event);
+     const parsed = parseCommand(arr); // parse content of message, derive other data from event
+     // todo this is causing too many updates, it should really store locally and update n times a second
+     // also produce fewer actions
+     midiActions.updateMidiView({...parsed, id: ++id, time, dir, src, hex: arr.map(hexify).join(' ')})
+     if (event?.currentTarget?.id === linnIn?.id)
+       onLinnMidiMessage(event);
+   }
   }
 
   function onLinnMidiMessage(event:MyMidiEvent) {

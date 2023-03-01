@@ -33,5 +33,6 @@ export type TotalState = {
      local: LocalState;
    control: ControlState;
    linn: LinnState;
+   midi: MidiState;
 }
 

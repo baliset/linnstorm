@@ -8,7 +8,8 @@ type MidiConnection = {
 
 
 export type MidiState = {
-  connected: Record<string, MidiConnection>  // currently connected devices
+  connected: Record<string, MidiConnection>;  // currently connected devices
+  recordable:Record<string,boolean>;
   midiView:Record<number, Record<string, any>>;
 };
 
@@ -26,24 +27,35 @@ interface SliceConfig {
 
 const initialState:MidiState = {
   connected:{},
+  recordable:{},
   midiView: {}, // nothing recorded
 };
 
 
 // type value will be added automatically to creators to match the key, or better yet to match the slice/key
 const creators:MidiCreators = {
-  connect:(connection)=>({connection}),
-  disconnect:(id)=>({id}),
-  clearMidiView: ()=>({}),
-  updateMidiView: (record)=>({record}),
+  record:(key, checked)=>({key, checked}),   // mark a device (by its name, not id, for now) as midi recordable in midi view
+  connect:(connection)=>({connection}),      // called when a device is connected
+  disconnect:(id)=>({id}),                   // when disconnected
+  clearMidiView: ()=>({}),                   // remove all currently recorded messages
+  updateMidiView: (record)=>({record}),      // when an incoming message is recordable, it will add a record
 };
 
 const deprop = (o:Record<any,any>,prop:any) => {const {[prop]:discard, ...preserve} = o; return preserve; }
 
 const reducers:MidiReducers = {
+    record: (s, {key, checked})=>({...s, recordable:{...s.recordable, [key]:checked}}),
     connect: (s, {connection})=>{
       const connected = {...s.connected, [connection.id]:connection};
-      return {...s,connected}
+
+      const keyForRecordable = connection.name;  // recordable devices are listed by name, not id
+      const prevRecord = s.recordable[keyForRecordable];  // find if it was already in the device list it will remain whether connected
+
+      // go with previous status when recording, otherwise check the item as recordable
+      const isRecordable = prevRecord === undefined? true: prevRecord;// preserve previous recordable status if it changed, regardless of whether connected
+
+      const recordable = {...s.recordable, [keyForRecordable]:isRecordable}
+      return {...s,connected, recordable}
     },
     disconnect: (s, {id})=>({...s, connected:deprop(s.connected, id)}),  // remove item from connected by id
     clearMidiView: (s) => ({...s, midiView: {}}),
