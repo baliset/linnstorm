@@ -24,7 +24,6 @@ export type LinnState = ScaleInfo & {
   baseMidiNote: 30;  // this is a fixed note numbner
   transposeSemis:number;
   tonic: number;
-  midiView:Record<number, Record<string, any>>;
   tuningOffsetSemis:number; // 5 = fourths
   tuningSubState:TuningSubstate;
   filteredScales:ExpandedScale[];
@@ -106,7 +105,6 @@ const initialState:LinnState = {
   scaleCount: expanded.length,
   baseMidiNote: 30,
   transposeSemis:0,
-  midiView: {}, // nothing recorded
   tuningOffsetSemis: 5, //
   tuningSubState: {tuningPref: 'explore'},
   filteredScales:expanded,
@@ -120,8 +118,6 @@ const initialState:LinnState = {
 const creators:LinnCreators = {
   tonic: (value) => ({value}),
   scale: (value) => ({value}),
-  clearMidiView:()=>({}),
-  updateMidiView:(record)=>({record}),
   transposeSemis:(transposeSemis)=>({transposeSemis}),
   tuningOffsetSemis:(tuningOffsetSemis)=>({tuningOffsetSemis}),
   tuningPref: (tuningPref)=>({tuningPref}),
@@ -140,8 +136,6 @@ const reducers:LinnReducers = {
         ...genScaleInfo(s.tonic,value, s.filteredScales),
       }
     },
-    clearMidiView: (s) => ({...s, midiView: {}}),
-    updateMidiView:(s, {record}) => ({...s, midiView: {...s.midiView, [record.id]:record}}),
     transposeSemis:(s, {transposeSemis})=>({...s, transposeSemis}),
     tuningOffsetSemis:(s, {tuningOffsetSemis})=>({...s, tuningOffsetSemis}),
     tuningPref: (s, {tuningPref})=>({...s, tuningSubState: {...s.tuningSubState, tuningPref}}),

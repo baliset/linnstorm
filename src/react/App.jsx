@@ -142,7 +142,7 @@ const Intro = () =>{
 }
 
 
-midiSetup( actions.linn);
+midiSetup( actions.midi);
 
 const  App = () => {
   const location = useLocation();

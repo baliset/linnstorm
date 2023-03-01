@@ -12,11 +12,13 @@ import {coverageMiddleware, coverageMiddlewareInit} from './coverage-middleware'
 import {sliceConfig as localSlice, LocalState} from "./local-slice";
 import {sliceConfig as controlSlice, ControlState} from "./control-slice";
 import {sliceConfig as linnSlice, LinnState} from './linn-slice';
+import {sliceConfig as midiSlice, MidiState} from './midi-slice';
+
 
 //-- app specific middlewares
 
 
-export const allSlices = [requestSlice, notifySlice, coverageSlice, localSlice, controlSlice, linnSlice];
+export const allSlices = [requestSlice, notifySlice, coverageSlice, localSlice, controlSlice, midiSlice, linnSlice];
 export const allMiddlewares = [ fatalMiddleware, coverageMiddleware, loggingMiddleware];
 export const middlewareInits = [  coverageMiddlewareInit];
 

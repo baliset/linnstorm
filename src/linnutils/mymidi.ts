@@ -172,7 +172,7 @@ const parseCommand = (arr:number[]): Partial<ParsedMidi> => {
 
 const hexify = (v:number)=>v?.toString(16)?.padStart(2,'0')  ;
 
-export const midiSetup = (linnActions:any) => {
+export const midiSetup = (midiActions:any) => {
 
   let nprnMsg:MyNrpnMsg[] = [];
   let nprnCtr = 0;
@@ -189,7 +189,7 @@ export const midiSetup = (linnActions:any) => {
     const parsed = parseCommand(arr); // parse content of message, derive other data from event
     // todo this is causing too many updates, it should really store locally and update n times a second
     // also produce fewer actions
-    linnActions.updateMidiView({...parsed, id: ++id, time, dir, src: name, hex: arr.map(hexify).join(' ') })
+    midiActions.updateMidiView({...parsed, id: ++id, time, dir, src: name, hex: arr.map(hexify).join(' ') })
     // midiRowData.push();
     if(event?.currentTarget?.id === linnIn?.id)
       onLinnMidiMessage(event);

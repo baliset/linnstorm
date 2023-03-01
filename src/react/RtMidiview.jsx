@@ -10,7 +10,7 @@ const getRowNodeId = data=>data.id
 export const  RtMidiview = () => {
   const [filter, setFilter]  = useState('');
   const {
-    linn: { midiView}
+    midi: { midiView}
   } = useSelector(s=>s);
 
   // todo this is very inefficient, but fine for now
