@@ -8,14 +8,6 @@ import {actions, useSelector} from "../actions-integration";
 
 const kLinnDefaults = 'LinnStrument.Defaults';
 
-function loadMyFaves(rows)
-{
-  const s = localStorage.getItem('hzsetting1');
-  const o = JSON.parse(s);
-
-  // apply the data that was saved
-  rows.forEach(row=>row.b = o[row.nrpn]);
-}
 function saveAsLinnDefaults()
 {
   const v = JSON.stringify(currentLinnParams)

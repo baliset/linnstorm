@@ -2,18 +2,25 @@ import React, {useState, useCallback} from 'react';
 import {interrogate, test} from "../linnutils/mymidi";
 import {Btn} from './Btn';
 import {actions} from "../actions-integration";
-
+import {CheckGroup} from "./CheckGroup";
 
 const patchPrefix = 'patch.';
 const  LinnControl = ({rows}) => {
   const [patchA, setPatchA]   = useState(undefined);
   const [patchB, setPatchB]   = useState(undefined);
+  const [choices, setChoices] = useState({'Copy selected rows only': false});
+  const checkCallback   = useCallback((k,v)=>setChoices({'Copy selected rows only': v}),[]);
+  const upwdCb = useCallback((col)=>actions.midi.updateParamViewWithDefaults(col, Object.values(choices)[0]),[choices]);
+  const upwcCb = useCallback((col)=>actions.midi.updateParamViewWithCurrent(col, Object.values(choices)[0]),[choices]);
+
   const getPatchNames = useCallback(()=>
     Object
       .keys(localStorage)
       .filter(k=>k.startsWith(patchPrefix))
       .map(s=>s.slice(patchPrefix.length))
    ,[]);
+
+
   const savePatch  = useCallback((patchName, value)=>localStorage.setItem(patchPrefix+patchName, value),[]);
   const [patchNames, setPatchNames] = useState(()=>getPatchNames());
 
@@ -37,8 +44,14 @@ const  LinnControl = ({rows}) => {
 
    return  (
             <div style={{padding:'5px 5px'}}>
-              <Btn onClick={()=>{interrogate()}}>Interrogate</Btn>
-              <Btn onClick={()=>{test()}}>Test</Btn>
+              {/*<Btn onClick={()=>{interrogate()}}>Interrogate</Btn>*/}
+              {/*<Btn onClick={()=>{test()}}>Test</Btn>*/}
+              <Btn onClick={()=>upwdCb('a')}>Load Defaults into Column A</Btn>
+              <Btn onClick={()=>upwdCb('b')}>B</Btn>
+              <Btn onClick={()=>upwcCb('a')}>Load Current into Column A</Btn>
+              <Btn onClick={()=>upwcCb('b')}>B</Btn>
+
+              <CheckGroup choices={choices} heading="" name="SelectedOnly" setChoice={checkCallback} />
 
               <span>Stored Settings A:</span>
               <select onChange={chSelectA} value={patchA}>
