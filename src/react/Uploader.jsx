@@ -1,11 +1,10 @@
 import React, {useState, useEffect, useCallback, useRef} from 'react';
-import jsyaml from 'js-yaml';
 import {ActionButton} from './Btn';
 
 const accepted   = "application/yaml,application/json";
 const uploaderId = 'uploader';
 
-export const Uploader = ({label, sendContent}) => {
+export const Uploader = ({label, consumeUploaded}) => {
   const refInput = useRef(null);
   const [status, sStatus] = useState('not loaded');
   const [preview, sPreview] = useState('nothing to see yet...');
@@ -17,7 +16,7 @@ export const Uploader = ({label, sendContent}) => {
     const fileloaded = e => {
       const {result} = e.target;
       sContents(result); // for display confirmation purposes
-      sendContent(result); // passed in to process the information
+      consumeUploaded(result); // passed in to process the information
       sStatus(`file:'${fileObj.name}' length:${contents.length} bytes`);
       sPreview(contents.substring(0, 80)); // show first 80 characters
     }
