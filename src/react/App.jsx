@@ -14,7 +14,7 @@ import {SliceView} from "./SliceView";
 import {RtParameter} from "./RtParameters";
 import RtTuning from "./RtTuning";
 import {RtMidiview} from "./RtMidiview";
-
+import {RtFiles} from "./RtFiles.jsx";
 import {midiSetup} from "../linnutils/mymidi.ts";
 
 const palette = {
@@ -170,13 +170,13 @@ const  App = () => {
         <Layout left={left} right={right}>
 
             <Navbar>
-
-
               <div style={{ margin: 'auto', width: '50%', display: 'inline-block'}}>
               <MyNavLink curPath={location.pathname} to="/">Intro</MyNavLink>
               <MyNavLink curPath={location.pathname} to="/params">Parameters</MyNavLink>
               <MyNavLink curPath={location.pathname} to="/tuning">Tuning</MyNavLink>
               <MyNavLink curPath={location.pathname} to="/midi">Midi View</MyNavLink>
+              <MyNavLink curPath={location.pathname} to="/files">Import/Export Settings</MyNavLink>
+
               </div>
               <div style={{float:'right', display: 'inline-block', marginRight:'20px'}}>
                 <a style={{color:'white', textDecoration:'none', font: 'Roboto', }}
@@ -211,6 +211,8 @@ const  App = () => {
                     <Route path="/params" element={<RtParameter/>}/>
                     <Route path="/tuning" element={<RtTuning/>}/>
                     <Route path="/midi" element={<RtMidiview/>}/>
+                    <Route path="/files" element={<RtFiles/>}/>
+
 
                   </Routes>
                 </>

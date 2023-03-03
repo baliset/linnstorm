@@ -29,5 +29,10 @@ export const RBtn = styled(Btn)`
   margin-right: 0px;
   padding: 5px 10px;
   border-radius: 24px 24px;
-
+`
+export const ActionButton = styled.button`
+  background-color: #747bff;
+  color: lightgoldenrodyellow;
+  border-radius: 20px;
+  &:hover { background-color:orange; color:black;}
 `
