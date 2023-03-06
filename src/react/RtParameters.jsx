@@ -2,33 +2,8 @@ import React, { useState, useEffect} from 'react';
 import {MyGrid} from "./MyGrid";
 import LinnControl from "./LinnControl";
 import { linnPropColumnDefs} from "../xform/columndefs";
-import {currentLinnParams} from "../linnutils/mymidi";
 import {actions, useSelector} from "../actions-integration";
 
-
-const kLinnDefaults = 'LinnStrument.Defaults';
-
-function saveAsLinnDefaults()
-{
-  const v = JSON.stringify(currentLinnParams)
-  localStorage.setItem(kLinnDefaults,v);
-}
-
-function saveAsFave(name)
-{
-  const v = JSON.stringify(currentLinnParams)
-  localStorage.setItem(name,v);
-}
-
-
-function loadLinnDefaults(rows)
-{
-  const s = localStorage.getItem(kLinnDefaults);
-  const o = JSON.parse(s);
-
-  // apply the data that was saved
-  rows.forEach(row=>row.d = o[row.nrpn]);
-}
 
 const getRowNodeId = data=>data.nrpn
 
@@ -53,9 +28,6 @@ export const  RtParameter = () => {
     o?.cat?.includes(filter) ||
     o?.desc?.includes(filter)||
     o?.side?.includes(filter));
-
-  // loadMyFaves(rowData);
-  // loadLinnDefaults(rowData);
 
    return  (
       <>
