@@ -52,6 +52,18 @@ function vfTime(p)
 
 }
 
+function vfDateTime(p)
+{
+    const n = p?.value;
+    if(n === undefined)
+        return '';
+
+    const d = new Date(p.value);
+    return d.toLocaleString();
+
+}
+
+
 function vfExpander(p)
 {
     const r = p?.data;
@@ -199,7 +211,13 @@ const linnPropColumns = [
 ].map(o=>({...o,  suppressMenu: true, floatingFilter: true, floatingFilterComponentParams: { suppressFilterButton: true }}));
 
 
+const patchColumns = [
+    {f: 'timestamp', maxWidth:100, comparator:numberSort, valueFormatter:vfDateTime},
+    {f: 'name', maxWidth:180},
+    {f: 'comments'},
+].map(o=>({...o,  suppressMenu: true, floatingFilter: true, floatingFilterComponentParams: { suppressFilterButton: true }}));
 
 export const linnPropColumnDefs = linnPropColumns.map(o=>toAgColDef(o)); // xform abbrievated column definitions to AgGrid spec columnDefinitions
 
 export const midiColumnDefs = midiColumns.map(o=>toAgColDef(o)); // xform abbrievated column definitions to AgGrid spec columnDefinitions
+export const patchColumnDefs = patchColumns.map(o=>toAgColDef(o)); // xform abbrievated column definitions to AgGrid spec columnDefinitions
