@@ -23,8 +23,10 @@ export const  RtFiles = () => {
 
   }, []);   // do something with the uploaded data
 
-
-
+// todo make the uploader accept yaml files without having to set finder to all files each time
+// look into putting a modal dialog into a route
+// look into how to pass a tag into a function to use as a child for one of its rendered tags
+// https://stackoverflow.com/questions/39652686/pass-react-component-as-props
   return  (
       <div>
         <Uploader label={uploadLabel} consumeUploaded={consumeUploaded}/>

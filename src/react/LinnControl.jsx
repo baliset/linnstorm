@@ -1,5 +1,4 @@
 import React, {useState, useCallback} from 'react';
-import {interrogate, test} from "../linnutils/mymidi";
 import {Btn} from './Btn';
 import {actions} from "../actions-integration";
 import {CheckGroup} from "./CheckGroup";

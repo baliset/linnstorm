@@ -2,9 +2,13 @@ import {tsToDate, tsToTime} from "./datexforms";
 import {isNumber} from "luxon/src/impl/util";
 import {currentLinnParams} from "../linnutils/mymidi";
 import {assignments, arpDir, tempoValues, rowOffsets, animations} from "../linnutils/linn-expansion"
+import {DateTime} from "luxon";
+import {PatchNameEditor} from "../agstuff/PatchNameEditor.jsx";
 
 const vgTsToTime = (params)=>isNumber(params.value)? tsToTime(params.value):undefined;
 const vgTsToDate = (params)=>isNumber(params.value)?  tsToDate(params.value):undefined;
+
+
 
 const defCol = {
     sortable:true,
@@ -51,6 +55,7 @@ function vfTime(p)
     return `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}:${d.getSeconds().toString().padStart(2,'0')}.${d.getMilliseconds()}`;
 
 }
+const dtfmt = "yy-MM-dd HH:mm:ss";
 
 function vfDateTime(p)
 {
@@ -58,9 +63,7 @@ function vfDateTime(p)
     if(n === undefined)
         return '';
 
-    const d = new Date(p.value);
-    return d.toLocaleString();
-
+    return DateTime.fromMillis(n).toFormat(dtfmt);
 }
 
 
@@ -182,13 +185,13 @@ const linnPropColumns = [
     {f:'subcat',  maxWidth:85},
 
     {f:'a',  maxWidth:85, comparator:numberSort, editable:true, cellRenderer: 'linnParamRenderer'},
-    {f:'b',  maxWidth:185,comparator:numberSort, valueFormatter:vfExpander, cellRenderer: 'linnParamRenderer'},
+    {f:'b',  maxWidth:85,comparator:numberSort, valueFormatter:vfExpander, cellRenderer: 'linnParamRenderer'},
     {f:'b-d',  maxWidth:85, valueGetter:vgDiffer('b', 'd')},
 
-    {f:'c',   maxWidth:185, valueGetter:vgCurrent, comparator:numberSort, valueFormatter:vfExpander, cellRenderer: 'linnParamRenderer'},
+    {f:'c',   maxWidth:85, valueGetter:vgCurrent, comparator:numberSort, valueFormatter:vfExpander, cellRenderer: 'linnParamRenderer'},
     {f:'c-d', maxWidth:85, valueGetter:vgDiffer('c', 'd')},
 
-    {f:'d',  maxWidth:185, comparator:numberSort, cellRenderer: 'linnParamRenderer'},
+    {f:'d',  maxWidth:85, comparator:numberSort, cellRenderer: 'linnParamRenderer'},
 
 
     {f:'key',  minWidth:250}, {f:'min',maxWidth:nw}, {f:'max',maxWidth: nw},
@@ -212,10 +215,11 @@ const linnPropColumns = [
 
 
 const patchColumns = [
-    {f: 'timestamp', maxWidth:100, comparator:numberSort, valueFormatter:vfDateTime},
-    {f: 'name', maxWidth:180},
-    {f: 'comments'},
-].map(o=>({...o,  suppressMenu: true, floatingFilter: true, floatingFilterComponentParams: { suppressFilterButton: true }}));
+    {f:'sel', maxWidth:50, cellRenderer: 'checkboxRenderer', floatingFilter:false},
+    {f: 'updated', maxWidth:140, comparator:numberSort, valueFormatter:vfDateTime},
+    {f: 'name', maxWidth:140, editable: true, cellEditor: 'patchNameEditor', floatingFilter: true, floatingFilterComponentParams: { suppressFilterButton: true }},
+    {f: 'comments', floatingFilter: true, floatingFilterComponentParams: { suppressFilterButton: true }},
+].map(o=>({...o,  suppressMenu: true, }));
 
 export const linnPropColumnDefs = linnPropColumns.map(o=>toAgColDef(o)); // xform abbrievated column definitions to AgGrid spec columnDefinitions
 
