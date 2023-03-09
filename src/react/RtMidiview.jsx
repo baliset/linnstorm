@@ -20,12 +20,14 @@ export const  RtMidiview = () => {
   // todo this is very inefficient, but fine for now
   const rowData = Object.values(midiView);
 
-  const ffFilter = o => filter === '' ||(
-    o?.dir?.includes(filter) ||
-    o?.cmd?.includes(filter) ||
-    o?.src?.includes(filter) ||
-    o?.hex?.includes(filter) ||
-    o?.value?.toString()?.includes(filter));
+  const ffFilter = o => {
+    if (filter === '')
+      return true;
+
+    const FILTER = filter.toUpperCase();
+    const search = `${o?.cmd ?? ''}${o?.src}${o?.hex}${o?.type}${o?.value?.toString() ?? ''}`.toUpperCase();
+    return search.includes(FILTER);
+  };
 
   const columnDefs =  midiColumnDefs;
 
