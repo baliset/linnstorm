@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import { Route, Routes, NavLink, useLocation } from "react-router-dom"
 
 import styled from 'styled-components';
@@ -146,8 +146,16 @@ midiSetup( actions.midi);
 
 const  App = () => {
   const location = useLocation();
-
-
+  // when app renders, plug in handler for updates to local storage
+  // todo move this to patch-middleware instead when it is created
+  useEffect(()=>
+    window.onstorage =
+    evt => {
+      if(evt === undefined)
+        return;
+      actions.patch.mirrorOtherInstance(evt.key, evt.oldValue, evt.newValue);
+    },
+  []);
 
 
   // useSelector got complex because we didn't compensate for adding slices

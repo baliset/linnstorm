@@ -1,8 +1,15 @@
 import {oReduce} from '../utils/oreduce';
-import {a} from '../utils/middleware-utils';
 
 type Kind = 'patch'|'pref'|'version'|'filter';
+// todos move the date and the write through to middleware layer that does that stuff, so
+// functions are pure and we can backtrack correctly, etc.
 
+// prevent collisions with second copy of same page loaded in browser
+// one strategy is to check prior to write-through if  modifications by another tab when saving, and then
+// it would help to generate unique ids for any actually new item created, so we can recognize common ancestry of items
+// merging in anything found, or notifying user to decide whether to overwrite data from other tab session?
+// stuff like filters actually could be unique per session?
+// or maybe generate a modal error, as long as there is evidence of two app instances?
 
 type Entry = {
   kind:       Kind;
@@ -115,7 +122,8 @@ const creators:PatchCreators = {
   save:(name, comments, data) =>({name,comments,data}),
   saveCopyAs: (name, asName) => ({name, asName}),
   rename: (name, asName)=>({name,asName}),
-  saveFilter:(text)=>({text})
+  saveFilter:(text)=>({text}),
+  mirrorOtherInstance:(key, oldValue, newValue)=>({key, oldValue, newValue})  // another instance modified local storage
 };
 
 const reducers:PatchReducers = {
@@ -168,6 +176,21 @@ const reducers:PatchReducers = {
     const cache   = saveAny(s.cache, text, '', 'filter','filter');
     const filter = filterText(cache); // should be identical value to text!
     const patches = patchFilter(cache, filter);
+    return {cache, patches, filter};
+  },
+
+  mirrorOtherInstance: (s, {key, oldValue, newValue}) => {// another instance modified local storage
+
+    const cache:StorageBall = {...s.cache};
+
+    if(newValue === null)      // it is a deletion
+      delete cache[key];
+    else                       // it is an additon or a modification
+      cache[key] = JSON.parse(newValue)
+
+    const filter  = filterText(cache);
+    const patches = patchFilter(cache, filter);
+
     return {cache, patches, filter};
   }
 
