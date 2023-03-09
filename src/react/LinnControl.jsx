@@ -21,7 +21,6 @@ const  LinnControl = ({rows}) => {
 
 
   const savePatch  = useCallback((patchName, value)=>localStorage.setItem(patchPrefix+patchName, value),[]);
-  const [patchNames, setPatchNames] = useState(()=>getPatchNames());
 
   const loadPatchIntoColumn = useCallback((patchName,prop)=>{
     const s = localStorage.getItem(patchPrefix+patchName);
@@ -52,16 +51,7 @@ const  LinnControl = ({rows}) => {
 
               <CheckGroup choices={choices} heading="" name="SelectedOnly" setChoice={checkCallback} />
 
-              <span>Stored Settings A:</span>
-              <select onChange={chSelectA} value={patchA}>
 
-                {patchNames.map(v=><option key={v} value={v}>{v}</option>)}
-              </select>
-
-              <span>Stored Settings B:</span>
-              <select onChange={chSelectB} value={patchB}>
-                {patchNames.map(v=><option key={v} value={v}>{v}</option>)}
-              </select>
 
               {/*<ul>*/}
               {/*  {presets.map(k=>*/}
