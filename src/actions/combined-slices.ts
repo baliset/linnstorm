@@ -35,5 +35,6 @@ export type TotalState = {
    control: ControlState;
    linn: LinnState;
    midi: MidiState;
+   patch: PatchState;
 }
 
