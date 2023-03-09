@@ -1,5 +1,5 @@
-import React, {useRef, useState} from 'react';
-// import "ag-grid-enterprise";
+import React, {useCallback, useRef, useState} from 'react';
+import "ag-grid-enterprise";
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';
@@ -19,8 +19,9 @@ const frameworkComponents = {
     patchNameEditor:PatchNameEditor,
 };
 
-export const  MyGrid = ({rowData, columnDefs, ref, getRowNodeId, dark=true}) => {
+export const  MyGrid = ({rowData, columnDefs,  getRowNodeId, menu, dark=true}) => {
     const gridRef = useRef(null);
+    const onContextMenu = useCallback((e)=>e.preventDefault(),[])
 
     // setInterval(()=>gridRef?.current?.api?.gridOptionsWrapper?.ons,1000);
 
@@ -31,13 +32,15 @@ export const  MyGrid = ({rowData, columnDefs, ref, getRowNodeId, dark=true}) => 
     const gridOptions = {suppressPropertyNamesCheck : true};
     const className = `ag-theme-balham${dark? '-dark':''}`;
     return (
-        <div className={className} style={style}>
+        <div onContextMenu={onContextMenu} className={className} style={style}>
             <AgGridReact
                 onGridReady={ready}
                 ref={gridRef}
-                frameworkComponents={frameworkComponents}
+                allowContextMenuWithControlKey={true}
+
+                getContextMenuItems={menu}
+                components={frameworkComponents}
                 gridOptions={gridOptions}
-                immutableData={true}
                 toolPanel={'columns'}
                 showToolPanel={true}
                 reactNext={true}
