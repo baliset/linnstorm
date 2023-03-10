@@ -11,23 +11,25 @@ export type ScaleInfo = {
   scaleName: string;
   scaleType: number;
   scaleSteps: number[];
-  scaleNotes: number[];
+  scaleNotes: number[];         // these are the indices 0-11 pitchclasses that appear in the scale
   scaleNoteNames:escale;
   scaleMappedToKeys: number[];  // given 12 keys starting at C natural, which numbers are they if any in order of the scale?
   keyboardMapped:string[];      // an array of twenty four keys in ui that shows the current scale on white and black keys
   twelve:string[];
 }
 
-export type LinnState = ScaleInfo & {
-  scaleCount: number;  // total number of scales
+export type TuningInfo = {
+  transposeSemis:number;        // this is the absolute transposition setting of device (must be turned into octaves & semis)
+  tonic: number;                // this is the index of the pitch class that is the tonic of the scale
+  tuningOffsetSemis:number;     // 5 = fourths (the tuning of the device (exclusive of left handed & guitar for now)
+}
+export type LinnState = ScaleInfo & TuningInfo & {
   deviceColumns:number;
+  scaleCount: number;  // total number of scales
   baseMidiNote: 30;  // this is a fixed note numbner
-  transposeSemis:number;
-  tonic: number;
-  tuningOffsetSemis:number; // 5 = fourths
-  tuningSubState:TuningSubstate;
-  filteredScales:ExpandedScale[];
   scaleFilterText:string;
+  filteredScales:ExpandedScale[];
+  tuningSubState:TuningSubstate;
 }
 
 type LinnCreator = (s:LinnState,...rest: any)=>unknown;

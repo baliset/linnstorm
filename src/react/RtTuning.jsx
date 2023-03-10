@@ -4,6 +4,8 @@ import {actions, useSelector} from '../actions-integration';
 import {LinnCellDiv, LinnRowDiv, LinnCell} from "./LinnCell";
 import {Radio} from "./Radio";
 import {rotateNLeft, rotateNRight} from "../theory/scales-generated";
+import {ActionButton} from "./Btn";
+import {tuningToParamSet, uploadPatch} from "../linnutils/mymidi";
 
 const TSlider = styled.input`
   width:27em;
@@ -128,8 +130,9 @@ const  RtTuning = () => {
        {/*todo collect current values or default values and set all the sliders according to those*/}
 
       <div style={{marginLeft:'auto', marginRight:'auto', marginTop: '50px', width:'fit-content', border: '1px solid black'}}>
-      <Radio name="whatevs" choices={['current', 'default', 'explore']} defaultChoice="current" setChoice={actions.linn.tuningPref}/>
-      Tuning preference is {tuningPref}
+      {/*<Radio name="whatevs" choices={['current', 'default', 'explore']} defaultChoice="current" setChoice={actions.linn.tuningPref}/>*/}
+      {/*Tuning preference is {tuningPref}*/}
+      <ActionButton onClick={()=>uploadPatch(tuningToParamSet({ transposeSemis,tonic, tuningOffsetSemis,}, scaleNotes))}>Apply Tuning</ActionButton>
       </div>
       <LinnCellDiv>
         {[...Array(8).keys()].reverse().map(y=>(<LinnRowDiv key={y}>

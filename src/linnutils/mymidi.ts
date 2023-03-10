@@ -5,6 +5,7 @@ import {BrowserMIDIOutput} from '@midival/core/dist/wrappers/outputs/BrowserMIDI
 import {BrowserMIDIInput} from '@midival/core/dist/wrappers/inputs/BrowserMIDIInput';
 
 import {ccNumbers, ccIsLsbForCcMinus32, ccIsOnOff} from './cc-numbers';
+import {TuningInfo} from '../actions/linn-slice';
 
 type MidiInOrOut = BrowserMIDIInput|BrowserMIDIOutput;
 
@@ -365,6 +366,51 @@ export function interrogate()
 }
 
 
+export  function tuningToParamSet(tinfo:TuningInfo, scaleNotes:number[]):ParamSet
+{
+   const {transposeSemis, tuningOffsetSemis,tonic} = tinfo;
+
+  const kBaseOctave = 5;
+  const kBaseTrans = 7;
+
+  const zapTonicLights = {
+    215: 0, 216: 0, 217: 0, 218: 0,
+    219: 0, 220: 0, 221: 0, 222: 0,
+    223: 0, 224: 0, 225: 0, 226: 0,
+  };
+  const zapMainLights = {
+    203: 0, 204: 0, 205: 0, 206: 0,
+    207: 0, 208: 0, 209: 0, 210: 0,
+    211: 0, 212: 0, 213: 0, 214: 0,
+  };
+
+  const ps:ParamSet = {
+    ...zapMainLights,...zapTonicLights,
+    [tonic + 215]: 1,
+    227: tuningOffsetSemis,
+    37: (transposeSemis %12) + kBaseTrans,
+    36: Math.trunc(transposeSemis/12) + kBaseOctave,
+
+    };
+    scaleNotes.forEach(n=>ps[203+n] = 1);
+
+
+// 227 is the rowOffset (tuningOffsetSemis) in semitones, a value of 13 puts it into guitar mode otherwise 0-12 semitones
+  // per split values for transposition
+  // {nrpn:37, key: 'TransPitch',          min: 0, max:  14, desc: "Transpose Pitch (0-6: -7 to -1, 7: 0, 8-14: +1 to +7)"},
+  // {nrpn:38, key: 'TransLightsAndPitch', min: 0, max:  14, desc: "Transpose Lights (0-6: -7 to -1, 7: 0, 8-14: +1 to +7)"},
+  // {nrpn:36, key: 'Octave',              min: 0, max:  10, desc: "Octave (0: —5, 1: -4, 2: -3, 3: -2, 4: -1, 5: 0, 6: +1, 7: +2, 8: +3, 9: +4. 10: +5)"},
+
+// notelights global C-B 203-214 (notelightsmain) C-B 215-226
+// 247 is activenotelights preset
+
+
+// lefthanded mode is 246
+//   Note Number For Guitar Tuning Row ${v+1}` 263-270
+
+
+  return ps;
+}
 
 
 export function uploadPatch(patch:ParamSet)

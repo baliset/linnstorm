@@ -28,6 +28,14 @@ function describePatch(patch:Record<number,number>):string
   return `(${keyCount})`;
 }
 
+const rtParamsStyle = {
+  display:'grid',
+  gridTemplateColumns:'[colPatches] 532px [colParams] auto',
+  gridTemplateRows:'[rowIntro] min-content [rowControls] min-content [rowMain] auto',
+  gridColumnGap: '5px',
+  gridRowGap:'5px'
+};
+
 export const  RtParameter = () => {
   const [filter, setFilter]  = useState('');
   const {
@@ -112,21 +120,44 @@ save the defaults if not already saved into a patch
  */
 
   return  (
-      <>
-        <div style={{display:'inline-grid', width:'500px'}}>
-          Filter: <input id="pfilter" name="pfilter" type="text" value={patchFilter} onChange={event => actions.patch.saveFilter(event.target.value)}/>
+      <div style={rtParamsStyle}>
+      <div style={{gridColumnStart: 1, gridColumnEnd:3, gridRowStart:'rowIntro', alignContent:'center', alignSelf:'start', padding: '10px'}}>
+        <p>The Parameters page is dedicated to editing/comparing/and uploading patches for the Linnstrument</p>
+      </div>
+
+        <div style={{gridColumnStart: 'colPatches', gridRowStart:'rowControls', backgroundColor:'white', padding: '10px'}}>
+        <h1>LinnStrument Patch Browser</h1>
+        Use the context menu to load a patch into the parameter grid for editing/comparison or to upload it to the LinnStrument
+        </div>
+        <div style={{gridColumnStart: 'colParams', gridRowStart:'rowControls', backgroundColor:'#1c1c1c', color: 'white', padding: '10px'}}>
+          <h1>LinnStrument Parameter Browser</h1>
+          <p>You can browse parameter values and compare current/default settings against patches, or compare individual patches.</p>
+          <p>Use the context menu to directly upload a patch or save it.</p>
+
+        <LinnControl rows={linnpropRows}/>
+        { linnsConnected === 1? 'You have a LinnStrument currently connected':
+          linnsConnected > 1?   `You have too many (${linnsConnected}) LinnStruments connected`:
+            'No LinnStrument is connected at the moment'
+        }
+      </div>
+        <div style={{gridColumnStart: 'colPatches', gridRowStart:'rowMain'}}>
+          <hr/>
+          <div style={{paddingLeft:'10px'}}>
+          Patch Filter: <input id="pfilter" name="pfilter" type="text" value={patchFilter} onChange={event => actions.patch.saveFilter(event.target.value)}/>
+          </div>
+          <hr/>
           <MyGrid dark={false} rowData={patches} menu={patchMenu} columnDefs={patchColumnDefs} getRowNodeId={getPatchRowNodeId}/>
         </div>
-        <div style={{display:'inline-grid', width:'1400px'}}>
-          Filter: <input id="gfilter" name="gfilter" type="text" value={filter} onChange={event => setFilter(event.target.value)}/>
+        <div style={{gridColumnStart: 'colParams', gridRowStart:'rowMain'}}>
+          <hr/>
+          <div style={{paddingLeft:'10px'}}>
+
+          Parameter Filter: <input id="gfilter" name="gfilter" type="text" value={filter} onChange={event => setFilter(event.target.value)}/>
+          </div>
+          <hr/>
           <MyGrid dark={true} rowData={linnpropRows.filter(ffFilter)} columnDefs={linnPropColumnDefs}
                   getRowNodeId={getRowNodeId} menu={paramsMenu}/>
-          <LinnControl rows={linnpropRows}/>
-          { linnsConnected === 1? 'You have a LinnStrument currently connected':
-            linnsConnected > 1?   `You have too many (${linnsConnected}) LinnStruments connected`:
-              'No LinnStrument is connected at the moment'
-          }
         </div>
-      </>
+      </div>
     );
 };
