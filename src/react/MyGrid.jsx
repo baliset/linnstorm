@@ -8,7 +8,7 @@ import 'ag-grid-community/dist/styles/ag-theme-balham-dark.css';
 
 import {CheckboxRenderer} from '../agstuff/CheckboxRenderer';
 import {LinnParamRenderer} from "../agstuff/LinnParamRenderer";
-import {PatchNameEditor} from "../agstuff/PatchNameEditor.jsx";
+import {PatchNameEditor, PatchCommentEditor} from "../agstuff/PatchEditors";
 
 const style = {height: '700px', width: '100%'};
 
@@ -17,6 +17,7 @@ const frameworkComponents = {
     checkboxRenderer:CheckboxRenderer,
     linnParamRenderer: LinnParamRenderer,
     patchNameEditor:PatchNameEditor,
+    patchCommentEditor:PatchCommentEditor,
 };
 
 export const  MyGrid = ({rowData, columnDefs,  getRowNodeId, menu, dark=true}) => {

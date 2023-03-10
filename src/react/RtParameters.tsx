@@ -3,14 +3,13 @@ import {MyGrid} from "./MyGrid";
 
 import { linnPropColumnDefs, patchColumnDefs} from "../xform/columndefs";
 import {actions, useSelector} from "../actions-integration";
-import {PatchNameEditorInit} from "../agstuff/PatchNameEditor.jsx";
+import {PatchEditorsInit} from "../agstuff/PatchEditors";
 import {GetContextMenuItemsParams, MenuItemDef} from 'ag-grid-community';
 import LinnControl from './LinnControl';
 import {uploadPatch} from '../linnutils/mymidi';
-import {oReduce} from '../utils/oreduce';
 
 
-PatchNameEditorInit(actions.patch);
+PatchEditorsInit(actions.patch);
 
 /* todo
 
@@ -114,7 +113,7 @@ save the defaults if not already saved into a patch
 
   return  (
       <>
-        <div style={{display:'inline-grid', width:'400px'}}>
+        <div style={{display:'inline-grid', width:'500px'}}>
           Filter: <input id="pfilter" name="pfilter" type="text" value={patchFilter} onChange={event => actions.patch.saveFilter(event.target.value)}/>
           <MyGrid dark={false} rowData={patches} menu={patchMenu} columnDefs={patchColumnDefs} getRowNodeId={getPatchRowNodeId}/>
         </div>

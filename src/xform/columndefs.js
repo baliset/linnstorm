@@ -3,7 +3,6 @@ import {isNumber} from "luxon/src/impl/util";
 import {currentLinnParams} from "../linnutils/mymidi";
 import {assignments, arpDir, tempoValues, rowOffsets, animations} from "../linnutils/linn-expansion"
 import {DateTime} from "luxon";
-import {PatchNameEditor} from "../agstuff/PatchNameEditor.jsx";
 
 const vgTsToTime = (params)=>isNumber(params.value)? tsToTime(params.value):undefined;
 const vgTsToDate = (params)=>isNumber(params.value)?  tsToDate(params.value):undefined;
@@ -218,7 +217,7 @@ const patchColumns = [
     {f:'sel', maxWidth:50, cellRenderer: 'checkboxRenderer', floatingFilter:false},
     {f: 'updated', maxWidth:140, comparator:numberSort, valueFormatter:vfDateTime},
     {f: 'name', maxWidth:140, editable: true, cellEditor: 'patchNameEditor', floatingFilter: true, floatingFilterComponentParams: { suppressFilterButton: true }},
-    {f: 'comments', floatingFilter: true, floatingFilterComponentParams: { suppressFilterButton: true }},
+    {f: 'comments', editable: true, cellEditor: 'patchCommentEditor', floatingFilter: true, floatingFilterComponentParams: { suppressFilterButton: true }},
 ].map(o=>({...o,  suppressMenu: true, }));
 
 export const linnPropColumnDefs = linnPropColumns.map(o=>toAgColDef(o)); // xform abbrievated column definitions to AgGrid spec columnDefinitions

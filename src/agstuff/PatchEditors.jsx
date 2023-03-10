@@ -9,7 +9,7 @@ import {isSpecialPatchName, isSpecialName} from '../actions/patch-slice'
 let patchActions;
 
 // todo maybe move actions into the cellEditorParams somehow instead
-export function PatchNameEditorInit(actions)
+export function PatchEditorsInit(actions)
 {
   patchActions = actions;
 }
@@ -38,3 +38,34 @@ export const PatchNameEditor = forwardRef((props, ref) => {
 
   return <input type="text" ref={refInput} value={tempValue}  onChange={chValue} onBlur={blValue} style={{width: "100%"}}/>;
 });
+
+export const PatchCommentEditor = forwardRef((props, ref) => {
+  const [editText, setEditText] = useState(props.value);
+  const [oValue, _] = useState(props.value);
+  const refInput = useRef(null);
+
+  const chValue = useCallback((evt)=>{setEditText(evt.target.value)},[]);
+  const blValue = useCallback((evt)=>{
+    console.log(`patchname editor available props are `, props);
+
+    if(evt.target.value !== oValue) {
+      const {name, data} = props.node.data;
+      patchActions.save(name, evt.target.value, data);
+    }
+
+  },[oValue]);
+
+  useEffect(()=> refInput.current.focus(), []);   // focus on the input
+
+  useImperativeHandle(ref, () => {
+    return {   /* Component Editor Lifecycle methods */
+      getValue()            { return editText; }, // value and input are identical here
+      isCancelBeforeStart() { return false;    },
+      isCancelAfterEnd()    { return false;    }, // reject any change to a special property name
+    };
+  });
+
+  return <input type="text" ref={refInput} value={editText}  onChange={chValue} onBlur={blValue} style={{width: "100%"}}/>;
+});
+
+
