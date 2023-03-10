@@ -124,7 +124,7 @@ const AllSlices = () => <div>{Object.keys(actions).map((slice)=><SliceView key={
 
 let messageCtr = 0;
 
-
+const NewTabLink  = ({href, children}) => <a href={href} target="_blank" rel="noopener noreferrer">{children}</a>;
 
 const Intro = () =>{
   const { local } = useSelector(s=>s);
@@ -136,6 +136,12 @@ const Intro = () =>{
       <JSONTree data={local.config}
                 hideRoot={true} sortObjectKeys={false}
                 shouldExpandNodeInitially={should} />
+                <h1>Other Links</h1>
+                <ul>
+                 <li><NewTabLink href="https://www.rogerlinndesign.com/linnstrument">Roger Linn Design</NewTabLink></li>
+                  <li><NewTabLink href="https://www.rogerlinndesign.com/support/linnstrument-support-panel-settings">Manual</NewTabLink></li>
+
+                </ul>
     </div>
 
   </section>);
