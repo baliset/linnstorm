@@ -20,8 +20,6 @@ const  LinnControl = ({rows}) => {
    ,[]);
 
 
-  const savePatch  = useCallback((patchName, value)=>localStorage.setItem(patchPrefix+patchName, value),[]);
-
   const loadPatchIntoColumn = useCallback((patchName,prop)=>{
     const s = localStorage.getItem(patchPrefix+patchName);
     if(s === undefined) {

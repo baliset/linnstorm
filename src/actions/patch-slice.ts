@@ -120,6 +120,7 @@ const initialState:PatchState = {
 const creators:PatchCreators = {
   delete:(name)=>({name}),
   save:(name, comments, data) =>({name,comments,data}),
+  saveAsUnnamed:(data)=>({data}),
   saveCopyAs: (name, asName) => ({name, asName}),
   rename: (name, asName)=>({name,asName}),
   saveFilter:(text)=>({text}),
@@ -139,6 +140,12 @@ const reducers:PatchReducers = {
     return {cache, patches, filter};
   },
 
+  saveAsUnnamed:(s, {data})=>{
+    const cache   = savePatch(s.cache, data, '', '*');
+    const filter  = filterText(cache);
+    const patches = patchFilter(cache, filter);
+    return {cache, patches, filter};
+  },
   save:(s, {name, comments, data}) => {
     const cache   = savePatch(s.cache, data, comments, name);
     const filter  = filterText(cache);

@@ -72,8 +72,6 @@ class NRPNAccept {
           // store the result
           currentLinnParams[pNum]=pVal;
           actions.updateParamView(pNum, 'c', pVal);
-
-          console.info(`Linn[${pNum.toString().padStart(3, ' ')}] = ${pVal.toString().padStart(5,' ')}:  ${pName}`);
           this.nrpnMsg = [];
           return;
         }
@@ -326,13 +324,13 @@ function sendNRPN(paramNum:number,value:number)
   // console.log(`{pn:${paramNum} (0x${paramNum.toString(16)}), val:${value} (0x${value.toString(16)},
   //  msbPn:0x${msbPn.toString(16)}, lsbPn:0x${lsbPn.toString(16)},
   //  msbVal:0x${msbVal.toString(16)} lsbVal:0x${lsbVal.toString(16)}}`);
-
-  linnOut.send([MidiCommand.ControlChange+1,  99,  msbPn]); //   1011nnnn   01100011 ( 99)  0vvvvvvv         NRPN parameter number MSB CC
-  linnOut.send([MidiCommand.ControlChange+1,  98,  lsbPn]); //   1011nnnn   01100010 ( 98)  0vvvvvvv         NRPN parameter number LSB CC
-  linnOut.send([MidiCommand.ControlChange+1,  6,  msbVal]); //   1011nnnn   00000110 (  6)  0vvvvvvv         NRPN parameter value MSB CC
-  linnOut.send([MidiCommand.ControlChange+1, 38,  lsbVal]); //   1011nnnn   00100110 ( 38)  0vvvvvvv         NRPN parameter value LSB CC
-  linnOut.send([MidiCommand.ControlChange+1, 101, 127]);   //   1011nnnn   01100101 (101)  01111111 (127)   RPN parameter number Reset MSB CC
-  linnOut.send([MidiCommand.ControlChange+1, 100, 127]);   //   1011nnnn   01100100 (100)  01111111 (127)   RPN parameter number Reset LSB CC
+  const cc = MidiCommand.ControlChange+1;
+  linnOut.send([cc,  99,  msbPn]); //   1011nnnn   01100011 ( 99)  0vvvvvvv         NRPN parameter number MSB CC
+  linnOut.send([cc,  98,  lsbPn]); //   1011nnnn   01100010 ( 98)  0vvvvvvv         NRPN parameter number LSB CC
+  linnOut.send([cc,  6,  msbVal]); //   1011nnnn   00000110 (  6)  0vvvvvvv         NRPN parameter value MSB CC
+  linnOut.send([cc, 38,  lsbVal]); //   1011nnnn   00100110 ( 38)  0vvvvvvv         NRPN parameter value LSB CC
+  linnOut.send([cc, 101, 127]);    //   1011nnnn   01100101 (101)  01111111 (127)   RPN parameter number Reset MSB CC
+  linnOut.send([cc, 100, 127]);    //   1011nnnn   01100100 (100)  01111111 (127)   RPN parameter number Reset LSB CC
 
 
 }
@@ -356,13 +354,37 @@ export function interrogate()
 
   let ctr = 0;
   const intervalId = setInterval(()=>{
-      if(ctr >= params.length)
+      if(ctr >= params.length) {
         clearInterval(intervalId);
+        return;
+      }
       sendNRPN(ccReadVal, params[ctr++]);
   },
   10);
 
 }
+
+
+
+
+export function uploadPatch(patch:ParamSet)
+{
+  console.log(`uploadPatch`, patch)
+
+  const arr = Object.entries(patch);
+  let ctr = 0;
+  const intervalId = setInterval(()=>{
+      if(ctr >= arr.length) {
+        clearInterval(intervalId);
+        return;
+      }
+    const [nrpn, value] = arr[ctr++];
+    sendNRPN(Number(nrpn), value); // todo we have a type issue that it believes the keys are strings
+
+    }, 10);
+
+}
+
 
 export function test()
 {
