@@ -6,6 +6,7 @@ import {rotateNRight} from "../theory/scales-generated";
 import {ActionButton} from "./Btn";
 import {genInterruptiblePatchUploader, tuningToParamSet} from "../linnutils/mymidi";
 import {CheckGroup} from "./CheckGroup";
+import {Radio} from "./Radio";
 
 const TSlider = styled.input`
   width:27em;
@@ -54,7 +55,8 @@ const Keyboard = styled.div`
   box-shadow:0 0 50px rgba(0,0,0,0.5) inset,0 1px rgba(212,152,125,0.2) inset,0 5px 15px rgba(0,0,0,0.5)
 `;
 
-const SLabel = styled.label`color: white`;
+const SLabel = styled.label`color: white; display:inline-block; margin-top:6px; margin-bottom:4px;`;
+
 const whChars = [0, "h", "w", "w+h"]
 const patternToWh = a => a.map(v=>whChars[v]).join(', ');
 
@@ -66,16 +68,21 @@ const nameThatNote = ( v, pcArray) =>{
   return name? `${name}${Math.trunc(v/12)-1}`: '\u00a0';
 };
 
-const intervalNames = [
-'Unison',
-'Minor 2nd', '2nd',
-'Minor 3rd', '3rd',
-'4th', 'Tritone', '5th',
-'Minor 6th', '6th',
-'Minor 7th', '7th','Octave'
-];
+const availableIntervals = {
+  'Minor 3rds ': 3,
+  '3rds ':       4,
+  '4ths ':      5,
+  'Tritones ':   6,
+  '5ths ':       7,
+  'Octaves ':   12,
+  'Unison ':   127, // aka no offset
+  '"Guitar" ':  13,
+  'No Overlap ': 0,
+};
 
-const keyDyn ='Apply Dynamically';
+const intervalNames = Object.keys(availableIntervals);
+
+
 // todo pass in actual properties to visualize current configuration as well as experiment with others
 
 const uploadRealTimeTuningPatch = genInterruptiblePatchUploader();
@@ -87,19 +94,16 @@ const  RtTuning = () => {
       tuningSubState,
       },
       } = useSelector(s=>s);
-   const [chChoices, setChoices] = useState({[keyDyn]: true});
 
   const changeT  = useCallback(e => actions.linn.tonic(Number(e.target.value)),[]);
   const changeSc = useCallback(e => actions.linn.scale(Number(e.target.value)),[]);
   const changeTr = useCallback(e => actions.linn.transposeSemis(Number(e.target.value)),[]);
-  const changeTu = useCallback(e => actions.linn.tuningOffsetSemis(Number(e.target.value)),[]);
-  const setChoice = useCallback(e=>setChoices({[keyDyn]: !chChoices[keyDyn]}), [chChoices]);
+  const changeTu2 = useCallback(v =>actions.linn.tuningOffsetSemis(availableIntervals[v]),[]);
 
   const baseNote = baseMidiNote + transposeSemis; // what is the first midi note number
 
   useEffect(()=>{
-    if(chChoices[keyDyn])
-      uploadRealTimeTuningPatch(tuningToParamSet({ transposeSemis,tonic, tuningOffsetSemis}, scaleNotes));
+    uploadRealTimeTuningPatch(tuningToParamSet({ transposeSemis,tonic, tuningOffsetSemis}, scaleNotes));
   },[transposeSemis,tonic, tuningOffsetSemis, scaleNotes]);
 
 
@@ -115,9 +119,10 @@ const  RtTuning = () => {
         <Keyboard>
           <div style={{paddingLeft: '10px', color:'white'}}>
 
-            <SLabel>Row Tuning Offset: {tuningOffsetSemis} semitones (Interval: {intervalNames[tuningOffsetSemis]})</SLabel>
-            <TSlider  color="orange" name="Tuning" type="range" min={0} max={12} defaultValue={ tuningOffsetSemis } onChange={ changeTu }/>
 
+            <SLabel>Row Tuning Offset: {tuningOffsetSemis} </SLabel>
+            <Radio name="Tuning" choices={intervalNames} defaultChoice="5" setChoice={changeTu2}/>
+            <hr/>
             <SLabel>Transpose Semitones:  base of midi note #{baseMidiNote} offset by {transposeSemis} semitones</SLabel>
             <TSlider  color="green" name="Trans" type="range" min={-baseMidiNote} max={baseMidiNote+67} defaultValue={ transposeSemis } onChange={ changeTr }/>
 
@@ -132,10 +137,10 @@ const  RtTuning = () => {
             <SLabel>Scale Selection:  ({scaleType} notes: {patternToWh(scaleSteps)}) {scaleName}</SLabel>
             <TSlider  color="blue" name="Scale" type="range" min="0" max={scaleCount-1} defaultValue={ scaleIndex } onChange={ changeSc }/>
 
-            <SLabel>Scale Notes: {scaleNoteNames.join(",")}</SLabel>
+            {/*<SLabel>Scale Notes: {scaleNoteNames.join(",")}</SLabel>*/}
           </div>
 
-
+          <br/>
           {[0,-1,2,-3,4,5,-6,7,-8,9,-10,11,12,-13,14,-15,16,17,-18,19,-20,21,-22,23].map(v=>{
             const black = v<0;
             return black?<BlackKey key={v} pn={-v} t={tonic}>{keyboardMapped[-v]}</BlackKey>:
@@ -147,13 +152,7 @@ const  RtTuning = () => {
 
        {/*todo collect current values or default values and set all the sliders according to those*/}
 
-      <div style={{marginLeft:'auto', marginRight:'auto', marginTop: '50px', width:'fit-content', border: '1px solid black'}}>
-      {/*<Radio name="whatevs" choices={['current', 'default', 'explore']} defaultChoice="current" setChoice={actions.linn.tuningPref}/>*/}
-      {/*Tuning preference is {tuningPref}*/}
-        <CheckGroup active={true}  heading="" name="TuningCheckboxes" choices={chChoices} setChoice={setChoice}></CheckGroup>
-
-        <ActionButton onClick={()=>uploadRealTimeTuningPatch(tuningToParamSet({ transposeSemis,tonic, tuningOffsetSemis,}, scaleNotes))}>Apply Tuning</ActionButton>
-      </div>
+      <div style={{marginLeft:'auto', marginRight:'auto', marginTop: '50px', width:'fit-content'}}></div>
       <LinnCellDiv>
         {[...Array(8).keys()].reverse().map(y=>(<LinnRowDiv key={y}>
           {[...Array(deviceColumns).keys()].map(x=> {
