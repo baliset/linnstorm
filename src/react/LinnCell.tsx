@@ -18,14 +18,14 @@ type LinnCellProps = {x:number; y:number; isTonic:boolean, isScale:boolean, chil
 
 export const LinnCell2= styled('div')<LinnCellProps>`
   --bg:#ccc;
-  --tonicColor:#0f0;
-  --scaleColor:#0ff;
+  --tonicColor:#0ff;
+  --scaleColor:#0f0;
   --hl:#eee;
   --dim:50px;
   
   color: black;
   background-color:#ccc;
-  // background-color: ${p=>p.isTonic? '#0f0': p.isScale? '#0ff' : '#ccc'};
+  // background-color: ${p=>p.isTonic? '#0ff': p.isScale? '#0f0' : '#ccc'};
   margin: 0;
   min-width: var(--dim);
   max-width:  var(--dim);
@@ -55,8 +55,8 @@ export const LinnCell = (p:LinnCellProps) => {
   const {x,y,isTonic,isScale, children} = p;
   const dim = 35;
 
-  const rg = isTonic? `radial-gradient(#fff, #0f0, #ccc,  #ccc)`:
-             isScale? `radial-gradient(#fff, #0ff, #ccc,  #ccc)`:
+  const rg = isTonic? `radial-gradient(#fff, #0ff, #ccc,  #ccc)`:
+             isScale? `radial-gradient(#fff, #0f0, #ccc,  #ccc)`:
                        `radial-gradient(#ccc, #ccc)`;
 
 
