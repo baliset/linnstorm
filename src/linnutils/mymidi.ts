@@ -1,6 +1,6 @@
 import {MIDIVal, IMIDIOutput, IMIDIInput, IMIDIAccess, MidiMessage, ControlChangeMessage, } from "@midival/core";
 import {MidiCommand} from "@midival/constants";
-import {paramNumToName} from "./LinnVals";
+import {allParamsByNrpn, paramNumToName} from "./LinnVals";
 import {BrowserMIDIOutput} from '@midival/core/dist/wrappers/outputs/BrowserMIDIOutput';
 import {BrowserMIDIInput} from '@midival/core/dist/wrappers/inputs/BrowserMIDIInput';
 
@@ -369,7 +369,8 @@ export function interrogate()
 export  function tuningToParamSet(tinfo:TuningInfo, scaleNotes:number[]):ParamSet
 {
    const {transposeSemis, tuningOffsetSemis,tonic} = tinfo;
-
+   // scalenotes is not tonic adjusted and includes the octave, which we slice off
+   const adjScaleNotes = scaleNotes.slice(0,-1).map(u=>(u+tonic)%12);
   const kBaseOctave = 5;
   const kBaseTrans = 7;
 
@@ -377,22 +378,22 @@ export  function tuningToParamSet(tinfo:TuningInfo, scaleNotes:number[]):ParamSe
     215: 0, 216: 0, 217: 0, 218: 0,
     219: 0, 220: 0, 221: 0, 222: 0,
     223: 0, 224: 0, 225: 0, 226: 0,
-  };
+  } as const;
   const zapMainLights = {
     203: 0, 204: 0, 205: 0, 206: 0,
     207: 0, 208: 0, 209: 0, 210: 0,
     211: 0, 212: 0, 213: 0, 214: 0,
-  };
+  } as const;
 
   const ps:ParamSet = {
-    ...zapMainLights,...zapTonicLights,
-    [tonic + 215]: 1,
-    227: tuningOffsetSemis,
-    37: (transposeSemis %12) + kBaseTrans,
-    36: Math.trunc(transposeSemis/12) + kBaseOctave,
+    ...zapMainLights,...zapTonicLights,                   // first guarantee all main&tonic lights are turned off
+    [tonic + 215]: 1,                                     // now turn on the correct tonic light
+    227: tuningOffsetSemis,                               // strings are in fourths, tritone, fifths kind of thing
+    37: (transposeSemis %12) + kBaseTrans,                // set the transposition (do not transpose lights, since we do that manually?)
+    36: Math.trunc(transposeSemis/12) + kBaseOctave,   // set the octave transposition
 
     };
-    scaleNotes.forEach(n=>ps[203+n] = 1);
+  adjScaleNotes.forEach(n=>ps[203+n] = 1);                 // now modify ps to enable the notes in the scale
 
 
 // 227 is the rowOffset (tuningOffsetSemis) in semitones, a value of 13 puts it into guitar mode otherwise 0-12 semitones
@@ -411,6 +412,44 @@ export  function tuningToParamSet(tinfo:TuningInfo, scaleNotes:number[]):ParamSe
 
   return ps;
 }
+
+
+export function describeUpload(patch:ParamSet)
+{
+  return Object.entries(patch).map(([k,v])=>
+        `${v.toString(10).padStart(3,' ')}=[nrpn: ${k.padStart(3,' ')}] ${allParamsByNrpn[k].key}`);
+}
+export function genInterruptiblePatchUploader()
+{
+  let intervalId = 0; // only one setInterval can be active between users of one generated function
+
+  return (patch:ParamSet) => {
+    const arr = Object.entries(patch);
+    let counter = 0;
+    console.log(`uploadPatch`, describeUpload(patch));
+    if(intervalId)  { clearInterval(intervalId); } // calling even with empty array should cancel outstanding
+    if(!arr.length) { return; }                    // don't bother continue once canceled if array empty
+
+    const doSomething = () => {                    // the actual work, advances the counter
+      const [nrpn, value] = arr[counter++];
+      sendNRPN(Number(nrpn), value); // todo we have a type issue that it believes the keys are strings
+    }
+
+    intervalId = setInterval(()=>{        // self clearing setInterval logic
+      if(counter >= arr.length) {
+        clearInterval(intervalId);
+        return;
+      }
+      doSomething();
+
+    }, 10);
+    doSomething();                                 // do the first iteration immediately, why wait?
+  }
+
+}
+
+
+
 
 
 export function uploadPatch(patch:ParamSet)

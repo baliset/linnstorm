@@ -1,11 +1,11 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import styled from 'styled-components';
 import {actions, useSelector} from '../actions-integration';
 import {LinnCellDiv, LinnRowDiv, LinnCell} from "./LinnCell";
-import {Radio} from "./Radio";
-import {rotateNLeft, rotateNRight} from "../theory/scales-generated";
+import {rotateNRight} from "../theory/scales-generated";
 import {ActionButton} from "./Btn";
-import {tuningToParamSet, uploadPatch} from "../linnutils/mymidi";
+import {genInterruptiblePatchUploader, tuningToParamSet} from "../linnutils/mymidi";
+import {CheckGroup} from "./CheckGroup";
 
 const TSlider = styled.input`
   width:27em;
@@ -66,23 +66,41 @@ const nameThatNote = ( v, pcArray) =>{
   return name? `${name}${Math.trunc(v/12)-1}`: '\u00a0';
 };
 
+const intervalNames = [
+'Unison',
+'Minor 2nd', '2nd',
+'Minor 3rd', '3rd',
+'4th', 'Tritone', '5th',
+'Minor 6th', '6th',
+'Minor 7th', '7th','Octave'
+];
 
+const keyDyn ='Apply Dynamically';
 // todo pass in actual properties to visualize current configuration as well as experiment with others
+
+const uploadRealTimeTuningPatch = genInterruptiblePatchUploader();
 const  RtTuning = () => {
     const {
       linn:  {tonic, scaleIndex, scaleName, scaleType, scaleCount, scaleSteps,
       scaleNotes, scaleNoteNames, twelve, keyboardMapped,
       transposeSemis, baseMidiNote, tuningOffsetSemis,deviceColumns,scaleFilterText,
-      tuningSubState: {tuningPref}
+      tuningSubState,
       },
       } = useSelector(s=>s);
+   const [chChoices, setChoices] = useState({[keyDyn]: true});
+
   const changeT  = useCallback(e => actions.linn.tonic(Number(e.target.value)),[]);
   const changeSc = useCallback(e => actions.linn.scale(Number(e.target.value)),[]);
   const changeTr = useCallback(e => actions.linn.transposeSemis(Number(e.target.value)),[]);
   const changeTu = useCallback(e => actions.linn.tuningOffsetSemis(Number(e.target.value)),[]);
-
+  const setChoice = useCallback(e=>setChoices({[keyDyn]: !chChoices[keyDyn]}), [chChoices]);
 
   const baseNote = baseMidiNote + transposeSemis; // what is the first midi note number
+
+  useEffect(()=>{
+    if(chChoices[keyDyn])
+      uploadRealTimeTuningPatch(tuningToParamSet({ transposeSemis,tonic, tuningOffsetSemis}, scaleNotes));
+  },[transposeSemis,tonic, tuningOffsetSemis, scaleNotes]);
 
 
   // the twl
@@ -97,7 +115,7 @@ const  RtTuning = () => {
         <Keyboard>
           <div style={{paddingLeft: '10px', color:'white'}}>
 
-            <SLabel>Row Tuning Offset: {tuningOffsetSemis} semitones</SLabel>
+            <SLabel>Row Tuning Offset: {tuningOffsetSemis} semitones (Interval: {intervalNames[tuningOffsetSemis]})</SLabel>
             <TSlider  color="orange" name="Tuning" type="range" min={0} max={12} defaultValue={ tuningOffsetSemis } onChange={ changeTu }/>
 
             <SLabel>Transpose Semitones:  base of midi note #{baseMidiNote} offset by {transposeSemis} semitones</SLabel>
@@ -132,7 +150,9 @@ const  RtTuning = () => {
       <div style={{marginLeft:'auto', marginRight:'auto', marginTop: '50px', width:'fit-content', border: '1px solid black'}}>
       {/*<Radio name="whatevs" choices={['current', 'default', 'explore']} defaultChoice="current" setChoice={actions.linn.tuningPref}/>*/}
       {/*Tuning preference is {tuningPref}*/}
-      <ActionButton onClick={()=>uploadPatch(tuningToParamSet({ transposeSemis,tonic, tuningOffsetSemis,}, scaleNotes))}>Apply Tuning</ActionButton>
+        <CheckGroup active={true}  heading="" name="TuningCheckboxes" choices={chChoices} setChoice={setChoice}></CheckGroup>
+
+        <ActionButton onClick={()=>uploadRealTimeTuningPatch(tuningToParamSet({ transposeSemis,tonic, tuningOffsetSemis,}, scaleNotes))}>Apply Tuning</ActionButton>
       </div>
       <LinnCellDiv>
         {[...Array(8).keys()].reverse().map(y=>(<LinnRowDiv key={y}>
