@@ -154,13 +154,16 @@ const  App = () => {
   const location = useLocation();
   // when app renders, plug in handler for updates to local storage
   // todo move this to patch-middleware instead when it is created
-  useEffect(()=>
+  useEffect(()=> {
+    // disable browser level context menu it is in the way of our context menus
+    window.document.body.addEventListener('contextmenu', (e)=>{e.preventDefault()});
+
     window.onstorage =
     evt => {
       if(evt === undefined)
         return;
       actions.patch.mirrorOtherInstance(evt.key, evt.oldValue, evt.newValue);
-    },
+    }},
   []);
 
 
