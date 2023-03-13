@@ -3,9 +3,7 @@ import styled from 'styled-components';
 import {actions, useSelector} from '../actions-integration';
 import {LinnCellDiv, LinnRowDiv, LinnCell} from "./LinnCell";
 import {rotateNRight} from "../theory/scales-generated";
-import {ActionButton} from "./Btn";
-import {genInterruptiblePatchUploader, tuningToParamSet} from "../linnutils/mymidi";
-import {CheckGroup} from "./CheckGroup";
+import {genInterruptiblePatchUploader, tuningToParamSet, setSplitColumn} from "../linnutils/mymidi";
 import {Radio} from "./Radio";
 
 const TSlider = styled.input`
@@ -95,10 +93,17 @@ const  RtTuning = () => {
       },
       } = useSelector(s=>s);
 
+  const [splitCol, setSplitCol] = useState(12);
   const changeT  = useCallback(e => actions.linn.tonic(Number(e.target.value)),[]);
   const changeSc = useCallback(e => actions.linn.scale(Number(e.target.value)),[]);
   const changeTr = useCallback(e => actions.linn.transposeSemis(Number(e.target.value)),[]);
   const changeTu2 = useCallback(v =>actions.linn.tuningOffsetSemis(availableIntervals[v]),[]);
+
+  const changeSplit = useCallback(e =>{
+    const v = Number(e.target.value);
+    setSplitCol(v);
+    setSplitColumn(v)},[]);
+
 
   const baseNote = baseMidiNote + transposeSemis; // what is the first midi note number
 
@@ -118,6 +123,8 @@ const  RtTuning = () => {
 
         <Keyboard>
           <div style={{paddingLeft: '10px', color:'white'}}>
+            <SLabel>Split Slider {splitCol}</SLabel>
+            <TSlider  color="orange" name="SplitCol" type="range" min="1" max="25" defaultValue={ splitCol } onChange={ changeSplit }/>
 
 
             <SLabel>Row Tuning Offset: {tuningOffsetSemis} </SLabel>

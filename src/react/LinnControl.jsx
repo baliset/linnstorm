@@ -42,6 +42,7 @@ const  LinnControl = ({rows}) => {
             <div style={{padding:'5px 5px'}}>
               {/*<Btn onClick={()=>{interrogate()}}>Interrogate</Btn>*/}
               {/*<Btn onClick={()=>{test()}}>Test</Btn>*/}
+              <Btn onClick={()=>interrogate()}>Get Current Settings</Btn>
               <Btn onClick={()=>upwdCb('a')}>Load Defaults into Column A</Btn>
               <Btn onClick={()=>upwdCb('b')}>B</Btn>
               <Btn onClick={()=>upwcCb('a')}>Load Current into Column A</Btn>
