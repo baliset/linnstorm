@@ -26,6 +26,7 @@
     "@midival/core": "~0.0.17",
     "@midival/constants": "~0.0.1",
     "notistack": "^3.0.0-alpha.11",
+    "react-contexify": "6.0.0",
     "react-redux": "~7.2.9",
     "react-router-dom": "~6.8.1",
     "redux": "~4.2.1",
