@@ -31,7 +31,7 @@ const initialState:LocalState = {
     deploy: {time: 0, branch: 'unknown'}
   },
   layout: {
-    left: 100,
+    left: 0,
     right: 0,
   }
 };
