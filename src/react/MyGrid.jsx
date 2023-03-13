@@ -8,6 +8,8 @@ import 'react-contexify/ReactContexify.css';
 import {CheckboxRenderer} from '../agstuff/CheckboxRenderer';
 import {LinnParamRenderer} from "../agstuff/LinnParamRenderer";
 import {UpdatedRenderer} from "../agstuff/UpdatedRenderer";
+import {PatchNameRenderer} from "../agstuff/PatchNameRenderer";
+
 import {PatchNameEditor, PatchCommentEditor} from "../agstuff/PatchEditors";
 
 const style = {height: '700px', width: '100%'};
@@ -17,6 +19,7 @@ const frameworkComponents = {
     checkboxRenderer:CheckboxRenderer,
     linnParamRenderer: LinnParamRenderer,
     updatedRenderer: UpdatedRenderer,
+    patchNameRenderer:PatchNameRenderer,
     patchNameEditor:PatchNameEditor,
     patchCommentEditor:PatchCommentEditor,
 };
