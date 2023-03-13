@@ -215,7 +215,7 @@ const linnPropColumns = [
 
 const patchColumns = [
     {f:'sel', maxWidth:50, cellRenderer: 'checkboxRenderer', floatingFilter:false},
-    {f: 'updated', maxWidth:140, comparator:numberSort, valueFormatter:vfDateTime},
+    {f: 'updated', maxWidth:140, comparator:numberSort, valueFormatter:vfDateTime,  cellRenderer: 'updatedRenderer'},
     {f: 'name', maxWidth:140, editable: true, cellEditor: 'patchNameEditor', floatingFilter: true, floatingFilterComponentParams: { suppressFilterButton: true }},
     {f: 'comments', editable: true, cellEditor: 'patchCommentEditor', floatingFilter: true, floatingFilterComponentParams: { suppressFilterButton: true }},
 ].map(o=>({...o,  suppressMenu: true, }));
