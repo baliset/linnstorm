@@ -48,7 +48,7 @@ const Layout = styled.div`
                          "Left CenterBody Right";
 `;
 
-Layout.defaultProps = {left:200, right:0};
+Layout.defaultProps = {left:0, right:0};
 
 const Navbar = styled.section`
     grid-area: Navbar;
@@ -224,13 +224,12 @@ const  App = () => {
                 :
                 <>
                   <Routes>
-                    <Route path="/" element={<Intro/>}/>
+                    <Route path="/"       element={<RtParameter/>}/>
+                    <Route path="/intro"  element={<Intro/>}/>
                     <Route path="/params" element={<RtParameter/>}/>
                     <Route path="/tuning" element={<RtTuning/>}/>
-                    <Route path="/midi" element={<RtMidiview/>}/>
-                    <Route path="/files" element={<RtFiles/>}/>
-
-
+                    <Route path="/midi"   element={<RtMidiview/>}/>
+                    <Route path="/files"  element={<RtFiles/>}/>
                   </Routes>
                 </>
             }
