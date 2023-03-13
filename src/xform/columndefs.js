@@ -217,6 +217,7 @@ const patchColumns = [
     {f:'sel', maxWidth:50, cellRenderer: 'checkboxRenderer', floatingFilter:false},
     {f: 'updated', maxWidth:140, comparator:numberSort, cellRenderer: 'updatedRenderer'},
     {f: 'name', maxWidth:140, editable: true, cellEditor: 'patchNameEditor', cellRenderer: 'patchNameRenderer', floatingFilter: true, floatingFilterComponentParams: { suppressFilterButton: true }},
+    {f: 'keys', maxWidth: 60, comparator:numberSort,},
     {f: 'comments', editable: true, cellEditor: 'patchCommentEditor', floatingFilter: true, floatingFilterComponentParams: { suppressFilterButton: true }},
 ].map(o=>({...o,  suppressMenu: true, }));
 

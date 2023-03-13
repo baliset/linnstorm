@@ -17,6 +17,7 @@ type Entry = {
   updated:    number;
   comments:   string;
   data:       any;
+  keys?: number;       // only applicable where data is a Record type, (as in patches) but filters are strings, etc.
 }
 
 export type StorageBall = Record<string, Entry>;
@@ -59,9 +60,15 @@ function convertStorageToCache():StorageBall
 {
   // todo sanitize nonconforming objects in local storage and quarantine that data rather than throw an exception
   // test every key to make sure the data looks correct, and fixup local storage to reflect good stuf
-  let cache = oReduce(Object.entries({...localStorage}), ([k,v]:[string, string])=>[k,JSON.parse(v)], {})
+  let cache = oReduce(Object.entries({...localStorage}), ([k,v]:[string, string])=>{
+    const vv = JSON.parse(v);
+    if(typeof vv.data === 'object')
+      vv.keys = Object.keys(vv.data).length;
 
-  // create minimal data if missing, such as a starting text filter
+    return [k,vv];
+  }, {})
+
+  // create minimal data if missing, such as a starting text fil  ter
   if(cache?.filter === undefined)
     cache = saveAny(cache, '','', 'filter', 'filter');
 
@@ -84,9 +91,10 @@ function filterText(cache:StorageBall)
 function saveAny(cache:StorageBall, data:any, comments:string, name:string, kind:Kind):StorageBall
 {
   const updated = Date.now();       // we need the current time  todo this is not a pure function, antithetical to playback, should be done by middleware
+  const keys =     (typeof data === 'object')? Object.keys(data).length: undefined;
   // compounding issue that we are persisting the results
 
-  const entry:Entry = {kind, name, comments, data, updated};
+  const entry:Entry = {kind, name, comments, data, keys, updated};
   localStorage.setItem(name,JSON.stringify(entry));           // write it through to storage
   return {...cache, [name]:entry}
 
