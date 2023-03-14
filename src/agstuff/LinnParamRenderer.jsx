@@ -16,6 +16,17 @@ export const Swatch = styled.div`
     color: ${p => (p.color === 0||p.color === 5)? 'white':'black'};
 `;
 
+export const SmallSwatch = styled(Swatch)`
+    display: block;
+    text-align: center;
+    vert-align: middle;
+    min-width: 100px;
+    min-height: 32px;
+    &:hover {
+      font-weight: bold;
+    }
+`;
+
 
 export const  LinnParamRenderer = ({data, value}) => {
   if(data === undefined)
