@@ -2,23 +2,14 @@ import React, {useState, useCallback} from 'react';
 import {Btn} from './Btn';
 import {actions} from "../actions-integration";
 import {CheckGroup} from "./CheckGroup";
+import {interrogate} from "../linnutils/mymidi";
 
 const patchPrefix = 'patch.';
 const  LinnControl = ({rows}) => {
-  const [patchA, setPatchA]   = useState(undefined);
-  const [patchB, setPatchB]   = useState(undefined);
   const [choices, setChoices] = useState({'Copy selected rows only': false});
   const checkCallback   = useCallback((k,v)=>setChoices({'Copy selected rows only': v}),[]);
   const upwdCb = useCallback((col)=>actions.midi.updateParamViewWithDefaults(col, Object.values(choices)[0]),[choices]);
   const upwcCb = useCallback((col)=>actions.midi.updateParamViewWithCurrent(col, Object.values(choices)[0]),[choices]);
-
-  const getPatchNames = useCallback(()=>
-    Object
-      .keys(localStorage)
-      .filter(k=>k.startsWith(patchPrefix))
-      .map(s=>s.slice(patchPrefix.length))
-   ,[]);
-
 
   const loadPatchIntoColumn = useCallback((patchName,prop)=>{
     const s = localStorage.getItem(patchPrefix+patchName);
@@ -32,35 +23,23 @@ const  LinnControl = ({rows}) => {
     rows.forEach(row=>row[prop] = o[row.nrpn]);
   },[])
 
-  const chSelectA = useCallback((e)=>{setPatchA(e.target.value);loadPatchIntoColumn(e.target.value, 'a')},[loadPatchIntoColumn]);
-  const chSelectB = useCallback((e)=>{setPatchB(e.target.value);loadPatchIntoColumn(e.target.value, 'b')},[loadPatchIntoColumn]);
-
-
-  const presets = Object.keys(localStorage);
-
    return  (
             <div style={{padding:'5px 5px'}}>
-              {/*<Btn onClick={()=>{interrogate()}}>Interrogate</Btn>*/}
-              {/*<Btn onClick={()=>{test()}}>Test</Btn>*/}
               <Btn onClick={()=>interrogate()}>Get Current Settings</Btn>
               <Btn onClick={()=>upwdCb('a')}>Load Defaults into Column A</Btn>
               <Btn onClick={()=>upwdCb('b')}>B</Btn>
               <Btn onClick={()=>upwcCb('a')}>Load Current into Column A</Btn>
               <Btn onClick={()=>upwcCb('b')}>B</Btn>
+              <hr/>
+              <Btn onClick={()=>actions.local.setCompare('a-b')}>Compare A & B (two Patches) </Btn>
+              <Btn onClick={()=>actions.local.setCompare('a-c')}>Patch vs Current Settings</Btn>
+              <Btn onClick={()=>actions.local.setCompare('a-d')}>Patch vs Defaults</Btn>
+              <Btn onClick={()=>actions.local.setCompare('c-d')}>Current vs Defaults</Btn>
+
+
+
 
               <CheckGroup choices={choices} heading="" name="SelectedOnly" setChoice={checkCallback} />
-
-
-
-              {/*<ul>*/}
-              {/*  {presets.map(k=>*/}
-              {/*    <li key={k}>*/}
-              {/*      Load '{k}' Into Column:*/}
-              {/*      <RBtn onClick={()=>loadPatchIntoColumn(k,'a')}>A</RBtn>*/}
-              {/*      <RBtn onClick={()=>loadPatchIntoColumn(k,'b')}>B</RBtn>*/}
-              {/*    </li>)}*/}
-              {/*</ul>*/}
-
             </div>
 
     );

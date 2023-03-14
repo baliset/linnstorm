@@ -3,6 +3,7 @@ type ConfigInfo = {
   build:  Record<string, any>;
   deploy: Record<string, any>;
 }
+export type CompareProps =  'a-b'|'a-c'|'a-d'|'c-d';
 
 export interface LocalState {
   config: ConfigInfo;
@@ -10,6 +11,7 @@ export interface LocalState {
     left: number;
     right: number;
   }
+  compare: CompareProps; // compare two patches a/b  or patch against current or default, or compare current settings to defaults
 }
 
 type LocalCreator = (s:LocalState,...rest: any)=>unknown;
@@ -23,7 +25,6 @@ interface SliceConfig {
   creators: LocalCreators;
   initialState: LocalState;
 }
-
 const initialState:LocalState = {
   config: {
     app:    {name: 'unknown', url: 'unknown'},
@@ -33,7 +34,8 @@ const initialState:LocalState = {
   layout: {
     left: 0,
     right: 0,
-  }
+  },
+  compare: 'c-d'
 };
 
 
@@ -42,12 +44,14 @@ const creators:LocalCreators = {
   ingestConfig: (config) => ({config}),
   toggleLeft:   (expanded) => ({expanded}),
   toggleRight:  (expanded) => ({expanded}),
+  setCompare: (compare)=>({compare}),
 };
 
 const reducers:LocalReducers = {
   ingestConfig: (s, {config})=>({...s, config:  config as ConfigInfo}),
   toggleLeft:  (s, {expanded})=>({...s, layout: {...s.layout, left: s.layout.left? 0: expanded}}),
   toggleRight: (s, {expanded})=>({...s, layout: {...s.layout, right: s.layout.right? 0: expanded}}),
+  setCompare: (s, {compare})=>({...s, compare}),
 };
 
 export const sliceConfig:SliceConfig = {name: 'local', creators, initialState, reducers};

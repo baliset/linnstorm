@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {MyGrid} from "./MyGrid";
 
-import { linnPropColumnDefs, patchColumnDefs} from "../xform/columndefs";
+import {linnPropColumnDefs, patchColumnDefs, setDiffColumns} from "../xform/columndefs";
 import {actions, useSelector} from "../actions-integration";
 import {PatchEditorsInit} from "../agstuff/PatchEditors";
 import LinnControl from './LinnControl';
@@ -9,7 +9,7 @@ import {uploadPatch} from '../linnutils/mymidi';
 import {Menu, Item, Separator, Submenu, useContextMenu, ItemParams} from 'react-contexify';
 import 'react-contexify/ReactContexify.css';
 import {ContextMenuHeader} from './ContextMenuHeader';
-
+import {CompareProps} from '../actions/local-slice';
 
 PatchEditorsInit(actions.patch);
 
@@ -38,15 +38,34 @@ const rtParamsStyle = {
   gridRowGap:'5px'
 };
 
+const filterParamColumns = (compare:CompareProps, o:any):boolean => {
+  const colId = o?.field;
+
+  console.log(`columnId for filtering is ${colId}`, o)
+  switch(compare) {
+    case 'a-b': return !(colId === 'c' || colId === 'd');
+    case 'a-c': return !(colId === 'b' || colId === 'd');
+    case 'a-d': return !(colId === 'b' || colId === 'c');
+    case 'c-d': return !(colId === 'a' || colId === 'b');
+  }
+}
 export const  RtParameter = () => {
   const [filter, setFilter]  = useState('');
+  const [paramColumnDefs, setParamColumDefs] = useState(linnPropColumnDefs);
   const [currentPatchName, setCurrentPatchName] = useState('');
   const [currentPatchData, setCurrentPatchData] = useState(undefined);
   const [patchDataColumnA, setPatchDataColumnA] = useState<Record<number,number>>({});
   const {
     midi: { paramView, linnsConnected},
-    patch: {patches, filter:patchFilter}
+    patch: {patches, filter:patchFilter},
+    local: {compare}
   } = useSelector(s=>s);
+
+  useEffect(()=>{
+    setDiffColumns(compare.slice(0,1), compare.slice(-1) ) // compare is formay x-y, so this will populate with a/b, a/c, c/d, etc.
+    setParamColumDefs(linnPropColumnDefs.filter(o=>filterParamColumns(compare, o)));  // todo this should be showHideColumn calls instead
+  }, [compare]);
+
 
   const kPatchContextMenu = 'patchMenu';
   const kParamsContextMenu = 'paramMenu';
@@ -92,6 +111,7 @@ export const  RtParameter = () => {
   if(linnsConnected>1)
     actions.notify.warn({msg: `You currently have ${linnsConnected} Linnstruments connected. So far this app handles only one`, remedy: 'Modal'});
   }, [linnsConnected]);
+
 
 
   const ffFilter = (o:any):boolean => filter === '' ||(
@@ -151,7 +171,7 @@ export const  RtParameter = () => {
           Parameter Filter: <input id="gfilter" name="gfilter" type="text" value={filter} onChange={event => setFilter(event.target.value)}/>
           </div>
           <hr/>
-          <MyGrid contextM={openParamsMenu} dark={true} rowData={linnpropRows.filter(ffFilter)} columnDefs={linnPropColumnDefs}
+          <MyGrid contextM={openParamsMenu} dark={true} rowData={linnpropRows.filter(ffFilter)} columnDefs={paramColumnDefs}
                   getRowNodeId={getRowNodeId}>
                   <Menu  theme="contexify_theme-dark" id={kParamsContextMenu}>
                     <ContextMenuHeader><span style={{color:'black'}}>Patch: </span>Column A ({Object.keys(patchDataColumnA).length} keys)</ContextMenuHeader>

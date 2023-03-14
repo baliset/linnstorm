@@ -144,12 +144,18 @@ function vgCurrent(p) {
 
 }
 
+// todo kludge kludge kludge
+let diffX = 'a';
+let diffY = 'b';
 
-function vgDiffer(from, to) {
+export function setDiffColumns(x,y) {diffX = x; diffY = y;}
+
+function vgDiffer() {
     return function(p) {
         const r = p?.data;
         if(r)
-            return r[from] === r[to]? 'same': 'diff'
+            return r[diffX] === r[diffY] ? 'same' : 'diff'
+
         return '?';
     }
 
@@ -183,14 +189,15 @@ const linnPropColumns = [
     {f: 'side', maxWidth: 75},
     {f:'subcat',  maxWidth:85},
 
+
+    // todo these columns for now must be indices
     {f:'a',  maxWidth:85, comparator:numberSort, editable:true, cellRenderer: 'linnParamRenderer'},
     {f:'b',  maxWidth:85,comparator:numberSort, valueFormatter:vfExpander, cellRenderer: 'linnParamRenderer'},
-    {f:'b-d',  maxWidth:85, valueGetter:vgDiffer('b', 'd')},
-
     {f:'c',   maxWidth:85, valueGetter:vgCurrent, comparator:numberSort, valueFormatter:vfExpander, cellRenderer: 'linnParamRenderer'},
-    {f:'c-d', maxWidth:85, valueGetter:vgDiffer('c', 'd')},
-
     {f:'d',  maxWidth:85, comparator:numberSort, cellRenderer: 'linnParamRenderer'},
+
+
+    {f:'diff',  maxWidth:85, valueGetter:vgDiffer('b', 'd')},
 
 
     {f:'key',  minWidth:250}, {f:'min',maxWidth:nw}, {f:'max',maxWidth: nw},
