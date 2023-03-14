@@ -3,7 +3,7 @@ import {vfExpander, vfParamType} from "../linnutils/linn-expansion";
 import styled from "styled-components";
 
 export const colors = [
-'#000', '#f00','#ffd700',
+'#000', '#f00','#ffd700',  //0,1,4,
 '#0f0', '#0ff','#00f',
 '#f0f', '#888','#fff',
 '#ffa500', '#df0','#faa'];
@@ -14,17 +14,6 @@ export const Swatch = styled.div`
     min-height: 100%;
     background-color: ${p => colors[p.color]};
     color: ${p => (p.color === 0||p.color === 5)? 'white':'black'};
-`;
-
-export const SmallSwatch = styled(Swatch)`
-    display: block;
-    text-align: center;
-    vert-align: middle;
-    min-width: 100px;
-    min-height: 32px;
-    &:hover {
-      font-weight: bold;
-    }
 `;
 
 

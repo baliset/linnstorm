@@ -17,7 +17,7 @@ export const animations = [
 ];
 
 
-const colors = ['!as set!','red','yellow','green','cyan','blue','magenta','!off!','white','orange','lime','pink'];
+const colors = ['(no change)','red','yellow','green','cyan','blue','magenta','(no color)','white','orange','lime','pink'];
 const octave = [-5,-4,-3,-2,-1, 0,'+1','+2','+3','+4','+5'];
 const trPitch = [-7,-6,-5,-4,-3,-2,-1,0,'+1','+2','+3','+4','+5','+6','+7'];
 export const pitchClass = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B']; // flats are BEA sharps FC
