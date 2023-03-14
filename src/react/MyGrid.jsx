@@ -11,6 +11,7 @@ import {UpdatedRenderer} from "../agstuff/UpdatedRenderer";
 import {PatchNameRenderer} from "../agstuff/PatchNameRenderer";
 import {DiffRenderer} from "../agstuff/DiffRenderer";
 import {PatchNameEditor, PatchCommentEditor} from "../agstuff/PatchEditors";
+import  {ColorEditor} from "../agstuff/ColorEditor";
 
 const style = {height: '700px', width: '100%'};
 
@@ -23,6 +24,7 @@ const frameworkComponents = {
     patchNameRenderer:PatchNameRenderer,
     patchNameEditor:PatchNameEditor,
     patchCommentEditor:PatchCommentEditor,
+    colorEditor:ColorEditor,
 };
 
 export const  MyGrid = ({children, contextM, rowData, columnDefs,  getRowNodeId, dark=true}) => {
