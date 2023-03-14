@@ -191,7 +191,6 @@ function vgDiffDefaults(p) {
     return '?';
 }
 
-
 const linnPropColumns = [
     {f:'sel', maxWidth:50, cellRenderer: 'checkboxRenderer'},
     {f:'nrpn', maxWidth:90, comparator:numberSort},
@@ -214,6 +213,13 @@ const linnPropColumns = [
     {f:'desc', h:'Description', width: 500, tooltipValueGetter: (p) =>p.value}
 ].map(o=>({...o,  suppressMenu: true, floatingFilter: true, floatingFilterComponentParams: { suppressFilterButton: true }}));  //'agSetColumnFilter'
 
+// a subset of columns used in a color editor so all values in list are colors
+const linnColorColumns = [
+    {f:'nrpn', maxWidth:90, comparator:numberSort},
+    {f: 'side', maxWidth: 75},
+    {f:'a',  maxWidth:85, comparator:numberSort, editable:true, cellEditor: 'colorEditor', cellRenderer: 'linnParamRenderer'},
+    {f:'key',  minWidth:250}, {f:'min',maxWidth:nw}, {f:'max',maxWidth: nw},
+].map(o=>({...o,  suppressMenu: true}));  //'agSetColumnFilter'
 
 
  const midiColumns = [
@@ -239,6 +245,8 @@ const patchColumns = [
 ].map(o=>({...o,  suppressMenu: true, }));
 
 export const linnPropColumnDefs = linnPropColumns.map(o=>toAgColDef(o)); // xform abbrievated column definitions to AgGrid spec columnDefinitions
+export const linnColorColumnsDef = linnColorColumns.map(o=>toAgColDef(o)); // xform abbrievated column definitions to AgGrid spec columnDefinitions
+
 
 export const midiColumnDefs = midiColumns.map(o=>toAgColDef(o)); // xform abbrievated column definitions to AgGrid spec columnDefinitions
 export const patchColumnDefs = patchColumns.map(o=>toAgColDef(o)); // xform abbrievated column definitions to AgGrid spec columnDefinitions
