@@ -5,6 +5,10 @@ import {LinnCellDiv, LinnRowDiv, LinnCell} from "./LinnCell";
 import {rotateNRight} from "../theory/scales-generated";
 import {genInterruptiblePatchUploader, tuningToParamSet, setSplitColumn} from "../linnutils/mymidi";
 import {Radio} from "./Radio";
+import {MyGrid} from "./MyGrid";
+import {linnColorColumnsDef} from "../xform/columndefs";
+import {Item, Menu, useContextMenu} from "react-contexify";
+import {ContextMenuHeader} from "./ContextMenuHeader";
 
 const TSlider = styled.input`
   width:27em;
@@ -80,20 +84,24 @@ const availableIntervals = {
 
 const intervalNames = Object.keys(availableIntervals);
 
-
+const kColorsMenu = 'ColorsMenu';
 // todo pass in actual properties to visualize current configuration as well as experiment with others
+const gridstyle = {height: '259px', width: '277px'};
 
 const uploadRealTimeTuningPatch = genInterruptiblePatchUploader();
 const  RtTuning = () => {
     const {
       linn:  {tonic, scaleIndex, scaleName, scaleType, scaleCount, scaleSteps,
-      scaleNotes, scaleNoteNames, twelve, keyboardMapped,
+      scaleNotes,  twelve, keyboardMapped,
       transposeSemis, baseMidiNote, tuningOffsetSemis,deviceColumns,scaleFilterText,
-      tuningSubState,
       },
-      } = useSelector(s=>s);
+      midi: { paramView, linnsConnected},
+
+    } = useSelector(s=>s);
 
   const [splitCol, setSplitCol] = useState(12);
+  const [colorRows, setColorRows] = useState([]);
+
   const changeT  = useCallback(e => actions.linn.tonic(Number(e.target.value)),[]);
   const changeSc = useCallback(e => actions.linn.scale(Number(e.target.value)),[]);
   const changeTr = useCallback(e => actions.linn.transposeSemis(Number(e.target.value)),[]);
@@ -103,13 +111,24 @@ const  RtTuning = () => {
     const v = Number(e.target.value);
     setSplitCol(v);
     setSplitColumn(v)},[]);
+  const { show:showContextMenu } = useContextMenu({});
 
+  const openParamsMenu=useCallback((agGridEvent)=>{
+    const {event} = agGridEvent;
+    // only show menu when rows are populated with something
+    if(event) showContextMenu({id: kColorsMenu, event, props: {colId:agGridEvent.colId,}});
+  },[paramView]);
 
+  useEffect(()=>{
+    setColorRows(Object.values(paramView).filter(o=>(o.nrpn >= 30 && o.nrpn <= 33) || (o.nrpn >= 130 && o.nrpn <= 133)));
+    }, [paramView])
   const baseNote = baseMidiNote + transposeSemis; // what is the first midi note number
 
   useEffect(()=>{
     uploadRealTimeTuningPatch(tuningToParamSet({ transposeSemis,tonic, tuningOffsetSemis}, scaleNotes));
   },[transposeSemis,tonic, tuningOffsetSemis, scaleNotes]);
+
+
 
 
   // the twl
@@ -158,6 +177,14 @@ const  RtTuning = () => {
       </Keyboard>
 
        {/*todo collect current values or default values and set all the sliders according to those*/}
+
+        <MyGrid style={gridstyle} contextM={openParamsMenu} dark={true} rowData={colorRows} columnDefs={linnColorColumnsDef}>
+          <Menu  theme="contexify_theme-dark" id={kColorsMenu}>
+            <ContextMenuHeader>Colors Context Menu</ContextMenuHeader>
+            <Item onClick={()=>console.log(`Save colors not implemented`)}>Save Colors (Unimplemented here)</Item>
+          </Menu>
+
+        </MyGrid>
 
       <div style={{marginLeft:'auto', marginRight:'auto', marginTop: '50px', width:'fit-content'}}></div>
       <LinnCellDiv>

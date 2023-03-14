@@ -10,6 +10,7 @@ import {Menu, Item, Separator, Submenu, useContextMenu, ItemParams} from 'react-
 import 'react-contexify/ReactContexify.css';
 import {ContextMenuHeader} from './ContextMenuHeader';
 import {CompareProps} from '../actions/local-slice';
+const gridstyle = {height: '700px', width: '100%'};
 
 PatchEditorsInit(actions.patch);
 
@@ -23,6 +24,8 @@ PatchEditorsInit(actions.patch);
  */
 const getRowNodeId = (data:any)=>data.nrpn
 const getPatchRowNodeId = (data:any)=>data.updated;
+
+
 
 function describePatch(patch:Record<number,number>):string
 {
@@ -147,8 +150,8 @@ export const  RtParameter = () => {
           Patch Filter: <input id="pfilter" name="pfilter" type="text" value={patchFilter} onChange={event => actions.patch.saveFilter(event.target.value)}/>
           </div>
           <hr/>
-          <MyGrid contextM={openPatchMenu} dark={false} rowData={patches} columnDefs={patchColumnDefs} getRowNodeId={getPatchRowNodeId}>
-          <Menu  id={kPatchContextMenu}>
+          <MyGrid style={gridstyle} contextM={openPatchMenu} dark={false} rowData={patches} columnDefs={patchColumnDefs} getRowNodeId={getPatchRowNodeId}>
+          <Menu id={kPatchContextMenu}>
             <ContextMenuHeader><span style={{color:'black'}}>Patch: </span>{currentPatchName}</ContextMenuHeader>
             <Separator />
             <Item disabled={!currentPatchName} id="1" onClick={()=>actions.patch.delete(currentPatchName)}>Delete patch</Item>
@@ -171,7 +174,7 @@ export const  RtParameter = () => {
           Parameter Filter: <input id="gfilter" name="gfilter" type="text" value={filter} onChange={event => setFilter(event.target.value)}/>
           </div>
           <hr/>
-          <MyGrid contextM={openParamsMenu} dark={true} rowData={linnpropRows.filter(ffFilter)} columnDefs={paramColumnDefs}
+          <MyGrid style={gridstyle} contextM={openParamsMenu} dark={true} rowData={linnpropRows.filter(ffFilter)} columnDefs={paramColumnDefs}
                   getRowNodeId={getRowNodeId}>
                   <Menu  theme="contexify_theme-dark" id={kParamsContextMenu}>
                     <ContextMenuHeader><span style={{color:'black'}}>Patch: </span>Column A ({Object.keys(patchDataColumnA).length} keys)</ContextMenuHeader>

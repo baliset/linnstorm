@@ -13,7 +13,6 @@ import {DiffRenderer} from "../agstuff/DiffRenderer";
 import {PatchNameEditor, PatchCommentEditor} from "../agstuff/PatchEditors";
 import  {ColorEditor} from "../agstuff/ColorEditor";
 
-const style = {height: '700px', width: '100%'};
 
 
 const frameworkComponents = {
@@ -27,7 +26,7 @@ const frameworkComponents = {
     colorEditor:ColorEditor,
 };
 
-export const  MyGrid = ({children, contextM, rowData, columnDefs,  getRowNodeId, dark=true}) => {
+export const  MyGrid = ({children, style, contextM, rowData, columnDefs,  getRowNodeId, dark=true}) => {
     const gridRef = useRef(null);
     const ready = useCallback(e=>{console.log(`ready event`, e)},[]);
 
