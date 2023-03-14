@@ -1,5 +1,6 @@
-import React, {forwardRef,useRef, useState, useCallback, useEffect, ReactDOM, useImperativeHandle} from "react";
-import {Swatch, colors} from "./LinnParamRenderer";
+import React, {forwardRef,useRef, useState, useEffect,  useImperativeHandle, memo} from "react";
+import ReactDOM from 'react-dom';
+import {colors, SmallSwatch} from "./LinnParamRenderer";
 const colorNames = ['!as set!','red','yellow','green','cyan','blue','magenta','!off!','white','orange','lime','pink'];
 
 
@@ -10,6 +11,10 @@ const KEY_TAB = 'Tab';
 
 // problem with color editor is that it cannot be
 
+const grcolorStyle = {
+
+
+}
 const numColors = colors.length;
 export const ColorEditor = memo(
   forwardRef((props, ref) => {
@@ -37,11 +42,11 @@ export const ColorEditor = memo(
 
     useEffect(() => {color !== null &&  props.stopEditing()}, [color]);
 
-    useImperativeHandle(ref, () => ({getValue() {return color ? 'Happy' : 'Sad';}}));
+    useImperativeHandle(ref, () => ({getValue() {return color;}}));
 
     return (
-      <div ref={refContainer} style={mood} tabIndex={1}> // important - without this the key presses wont be caught
-        {colors.map(c=><Swatch style={{border: `1px solid ${c===tempColor? 'black':'transparent'}`}} id={c} color={c} onClick={()=>setColor(c)}>{colorNames[c]}</Swatch>)}
+      <div ref={refContainer} tabIndex={1} style={grcolorStyle}>
+        {colors.map((c,i)=><SmallSwatch tabIndex={i+1} style={{border: `1px solid ${c===tempColor? 'black':'transparent'}`}} key={i} color={i} onClick={()=>setColor(i)}>{colorNames[i]}</SmallSwatch>)}
       </div>
     );
   })

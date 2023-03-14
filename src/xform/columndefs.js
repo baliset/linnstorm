@@ -215,10 +215,9 @@ const linnPropColumns = [
 
 // a subset of columns used in a color editor so all values in list are colors
 const linnColorColumns = [
-    {f:'nrpn', maxWidth:90, comparator:numberSort},
     {f: 'side', maxWidth: 75},
-    {f:'a',  maxWidth:85, comparator:numberSort, editable:true, cellEditor: 'colorEditor', cellRenderer: 'linnParamRenderer'},
-    {f:'key',  minWidth:250}, {f:'min',maxWidth:nw}, {f:'max',maxWidth: nw},
+    {f:'a',  h:'color', maxWidth:85, comparator:numberSort, editable:true, cellEditor: 'colorEditor',  cellEditorPopup: true, cellRenderer: 'linnParamRenderer'},
+    {f:'key',  minWidth:115,  maxWidth:115}
 ].map(o=>({...o,  suppressMenu: true}));  //'agSetColumnFilter'
 
 
