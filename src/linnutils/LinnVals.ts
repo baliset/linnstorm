@@ -177,7 +177,7 @@ export const deviceSettings = [
 ].map(o=>({...o, key:`${o.key}`, cat: 'Device'}))      ;
 
 //todo why is type LinnParam[] not working here
-export const allParams:any[] = [...deviceSettings, ...allGlobals, ...allSplitParams].map(o=>({...o, a:'', b:'', c:'', d:''}));
+export const allParams:any[] = [...deviceSettings, ...allGlobals, ...allSplitParams].map(o=>({...o, a:undefined, b:undefined, c:undefined, d:undefined}));
 
 
 // lookup a key by nrpn, or by key

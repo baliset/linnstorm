@@ -9,7 +9,7 @@ import {CheckboxRenderer} from '../agstuff/CheckboxRenderer';
 import {LinnParamRenderer} from "../agstuff/LinnParamRenderer";
 import {UpdatedRenderer} from "../agstuff/UpdatedRenderer";
 import {PatchNameRenderer} from "../agstuff/PatchNameRenderer";
-
+import {DiffRenderer} from "../agstuff/DiffRenderer";
 import {PatchNameEditor, PatchCommentEditor} from "../agstuff/PatchEditors";
 
 const style = {height: '700px', width: '100%'};
@@ -17,6 +17,7 @@ const style = {height: '700px', width: '100%'};
 
 const frameworkComponents = {
     checkboxRenderer:CheckboxRenderer,
+    diffRenderer:DiffRenderer,
     linnParamRenderer: LinnParamRenderer,
     updatedRenderer: UpdatedRenderer,
     patchNameRenderer:PatchNameRenderer,

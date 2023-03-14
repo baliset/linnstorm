@@ -153,9 +153,19 @@ export function setDiffColumns(x,y) {diffX = x; diffY = y;}
 function vgDiffer() {
     return function(p) {
         const r = p?.data;
-        if(r)
-            return r[diffX] === r[diffY] ? 'same' : 'diff'
+        if(r) {
+            const x = r[diffX];
+            const y = r[diffY];
+            const equal = x === y;            // e.g. 0=0 1=1 however also undefined=undefined
+            const hasX = (x !== undefined);
 
+            if(equal) {
+                return equal && hasX? 'same': 'empty';
+            } else {
+                const hasY = (y !== undefined);
+                return hasY? (hasX? 'diff': '==>'): '<=='; // only mark different if both are populate, otherwise only one side populated
+            }
+        }
         return '?';
     }
 
@@ -197,7 +207,7 @@ const linnPropColumns = [
     {f:'d',  maxWidth:85, comparator:numberSort, cellRenderer: 'linnParamRenderer'},
 
 
-    {f:'diff',  maxWidth:85, valueGetter:vgDiffer('b', 'd')},
+    {f:'diff',  maxWidth:85, valueGetter:vgDiffer(), cellRenderer: 'diffRenderer'},
 
 
     {f:'key',  minWidth:250}, {f:'min',maxWidth:nw}, {f:'max',maxWidth: nw},
