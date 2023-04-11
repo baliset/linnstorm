@@ -86,6 +86,7 @@ const availableIntervals:Record<string,number> = {
 };
 
 const intervalNames = Object.keys(availableIntervals);
+const deviceTypes = ["200", "128"];
 
 const kColorsMenu = 'ColorsMenu';
 // todo pass in actual properties to visualize current configuration as well as experiment with others
@@ -113,6 +114,7 @@ const  RtTuning = () => {
   const changeSc = useCallback((e:Re) => actions.linn.scale(Number(e.target.value)),[]);
   const changeTr = useCallback((e:Re) => actions.linn.transposeSemis(Number(e.target.value)),[]);
   const changeTu2 = useCallback((v:number) =>actions.linn.tuningOffsetSemis(availableIntervals[v]),[]);
+  const changeDevice = useCallback((v:string) =>actions.linn.deviceType(v==="128"? 16: 25),[]);
 
   const changeSplit = useCallback((e:any) =>{
     const v = Number(e.target.value);
@@ -147,7 +149,7 @@ const  RtTuning = () => {
 
   return  (
 
-      <div style={{marginLeft: '60px', marginTop: '40px', display:'grid', gridTemplateColumns: '820px auto', gridTemplateRows: '400px 500px'}}>
+      <div style={{marginLeft: '60px', marginTop: '40px', display:'grid', gridTemplateColumns: '820px auto', gridTemplateRows: '400px 50px 500px'}}>
 
         <div style={{gridColumn: 1, gridRow:1}}>
         <Keyboard>
@@ -199,8 +201,12 @@ const  RtTuning = () => {
 
         </MyGrid>
       </div>
-
-      <div style={{gridColumnStart: 1, gridColumnEnd: 3, gridRow: 2 }}>
+        <div style={{gridColumnStart: 1, gridColumnEnd: 3, gridRow: 2 }}>
+        <div style={{display:'inline-block'}}>My LinnStrument is type: {deviceColumns===16? 128:200} with {deviceColumns} columns
+        <Radio name="LinnType" choices={deviceTypes} defaultChoice="200" setChoice={changeDevice}/>
+        </div>
+        </div>
+        <div style={{gridColumnStart: 1, gridColumnEnd: 3, gridRow: 3 }}>
       <LinnCellDiv style={{gridColumn: 1, gridRow: 2 }}>
         {[...Array(8).keys()].reverse().map(y=>(<LinnRowDiv key={y}>
           {[...Array(deviceColumns).keys()].map(x=> {
@@ -217,7 +223,7 @@ const  RtTuning = () => {
         </LinnRowDiv>))}
       </LinnCellDiv>
       </div>
-    </div>
+      </div>
 
   );
 };
