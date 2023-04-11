@@ -44,8 +44,7 @@ interface RDivProps {
   thing:any;
 }
 
-const RDiv = (props:RDivProps) => {
-  const {thing, name} = props;
+const RDiv = ({thing, name}:RDivProps) => {
 
   const thingy:any = thing as unknown as  any;
 

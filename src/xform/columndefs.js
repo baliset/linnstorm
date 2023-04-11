@@ -144,12 +144,28 @@ function vgCurrent(p) {
 
 }
 
+// todo kludge kludge kludge
+let diffX = 'a';
+let diffY = 'b';
 
-function vgDiffer(from, to) {
+export function setDiffColumns(x,y) {diffX = x; diffY = y;}
+
+function vgDiffer() {
     return function(p) {
         const r = p?.data;
-        if(r)
-            return r[from] === r[to]? 'same': 'diff'
+        if(r) {
+            const x = r[diffX];
+            const y = r[diffY];
+            const equal = x === y;            // e.g. 0=0 1=1 however also undefined=undefined
+            const hasX = (x !== undefined);
+
+            if(equal) {
+                return equal && hasX? 'same': 'empty';
+            } else {
+                const hasY = (y !== undefined);
+                return hasY? (hasX? 'diff': '==>'): '<=='; // only mark different if both are populate, otherwise only one side populated
+            }
+        }
         return '?';
     }
 
@@ -175,7 +191,6 @@ function vgDiffDefaults(p) {
     return '?';
 }
 
-
 const linnPropColumns = [
     {f:'sel', maxWidth:50, cellRenderer: 'checkboxRenderer'},
     {f:'nrpn', maxWidth:90, comparator:numberSort},
@@ -183,20 +198,27 @@ const linnPropColumns = [
     {f: 'side', maxWidth: 75},
     {f:'subcat',  maxWidth:85},
 
+
+    // todo these columns for now must be indices
     {f:'a',  maxWidth:85, comparator:numberSort, editable:true, cellRenderer: 'linnParamRenderer'},
     {f:'b',  maxWidth:85,comparator:numberSort, valueFormatter:vfExpander, cellRenderer: 'linnParamRenderer'},
-    {f:'b-d',  maxWidth:85, valueGetter:vgDiffer('b', 'd')},
-
     {f:'c',   maxWidth:85, valueGetter:vgCurrent, comparator:numberSort, valueFormatter:vfExpander, cellRenderer: 'linnParamRenderer'},
-    {f:'c-d', maxWidth:85, valueGetter:vgDiffer('c', 'd')},
-
     {f:'d',  maxWidth:85, comparator:numberSort, cellRenderer: 'linnParamRenderer'},
+
+
+    {f:'diff',  maxWidth:85, valueGetter:vgDiffer(), cellRenderer: 'diffRenderer'},
 
 
     {f:'key',  minWidth:250}, {f:'min',maxWidth:nw}, {f:'max',maxWidth: nw},
     {f:'desc', h:'Description', width: 500, tooltipValueGetter: (p) =>p.value}
 ].map(o=>({...o,  suppressMenu: true, floatingFilter: true, floatingFilterComponentParams: { suppressFilterButton: true }}));  //'agSetColumnFilter'
 
+// a subset of columns used in a color editor so all values in list are colors
+const linnColorColumns = [
+    {f: 'side', maxWidth: 75},
+    {f:'a',  h:'color', maxWidth:105, comparator:numberSort, editable:true, cellEditor: 'colorEditor',  cellEditorPopup: true, cellRenderer: 'linnParamRenderer'},
+    {f:'key',  minWidth:115,  maxWidth:115}
+].map(o=>({...o,  suppressMenu: true}));  //'agSetColumnFilter'
 
 
  const midiColumns = [
@@ -215,12 +237,15 @@ const linnPropColumns = [
 
 const patchColumns = [
     {f:'sel', maxWidth:50, cellRenderer: 'checkboxRenderer', floatingFilter:false},
-    {f: 'updated', maxWidth:140, comparator:numberSort, valueFormatter:vfDateTime},
-    {f: 'name', maxWidth:140, editable: true, cellEditor: 'patchNameEditor', floatingFilter: true, floatingFilterComponentParams: { suppressFilterButton: true }},
+    {f: 'updated', maxWidth:140, comparator:numberSort, cellRenderer: 'updatedRenderer'},
+    {f: 'name', maxWidth:140, editable: true, cellEditor: 'patchNameEditor', cellRenderer: 'patchNameRenderer', floatingFilter: true, floatingFilterComponentParams: { suppressFilterButton: true }},
+    {f: 'keys', maxWidth: 60, comparator:numberSort,},
     {f: 'comments', editable: true, cellEditor: 'patchCommentEditor', floatingFilter: true, floatingFilterComponentParams: { suppressFilterButton: true }},
 ].map(o=>({...o,  suppressMenu: true, }));
 
 export const linnPropColumnDefs = linnPropColumns.map(o=>toAgColDef(o)); // xform abbrievated column definitions to AgGrid spec columnDefinitions
+export const linnColorColumnsDef = linnColorColumns.map(o=>toAgColDef(o)); // xform abbrievated column definitions to AgGrid spec columnDefinitions
+
 
 export const midiColumnDefs = midiColumns.map(o=>toAgColDef(o)); // xform abbrievated column definitions to AgGrid spec columnDefinitions
 export const patchColumnDefs = patchColumns.map(o=>toAgColDef(o)); // xform abbrievated column definitions to AgGrid spec columnDefinitions

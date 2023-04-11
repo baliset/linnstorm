@@ -1,18 +1,19 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React from 'react';
 import {vfExpander, vfParamType} from "../linnutils/linn-expansion";
 import styled from "styled-components";
 
-const colors = [
-'#000', '#f00','#ffd700',
+export const colors = [
+'#000', '#f00','#ffd700',  //0,1,4,
 '#0f0', '#0ff','#00f',
 '#f0f', '#888','#fff',
 '#ffa500', '#df0','#faa'];
 
-const Swatch = styled.div`
+export const Swatch = styled.div`
     display: inline-block;
-    width: 100%;
+    min-width: 100%;
+    min-height: 100%;
     background-color: ${p => colors[p.color]};
-    color: ${p => (p.color === 0||p.color === 5)? 'white':'black'};
+    color: ${p => (p.color === 0||p.color === 5)? 'white':'black'}; /* contrasting label color */
 `;
 
 

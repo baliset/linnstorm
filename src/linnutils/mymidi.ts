@@ -216,7 +216,7 @@ MIDIVal.connect().then((accessObject:IMIDIAccess) => {
   midiOutputs.map((bo:any)=>{
     if(isLinn(bo)) {
       linnOut = bo.output;
-      interrogate(); // automatically pull values when we see the connection to a Linnstrument
+      // interrogate(); // automatically pull values when we see the connection to a Linnstrument
     }
   });
 
@@ -418,6 +418,28 @@ export function describeUpload(patch:ParamSet)
 {
   return Object.entries(patch).map(([k,v])=>
         `${v.toString(10).padStart(3,' ')}=[nrpn: ${k.padStart(3,' ')}] ${allParamsByNrpn[k].key}`);
+}
+
+// send a value from 1 to 25
+export function setSplitColumn(n:number)
+{
+  // 200 0/1 inactivesplit/ active split
+  // 201 selected split = 0=left/1=right
+  // 202 split point column
+
+
+  if(n===1) {
+    sendNRPN(Number(200), 0);  // we *think* this turns off the split point thing altogether
+    sendNRPN(201, 1);       // select the right split when we get to column 1
+  } else if(n === 25) {
+    sendNRPN(Number(200), 0);  // we *think* this turns off the split point thing altogether
+    sendNRPN(201, 0);   // select the left split outright when we get to last column (and we don't know 25 is last it could be 16)
+  } else {
+    sendNRPN(Number(200), 1);
+    sendNRPN(Number(202), n); // todo we have a type issue that it believes the keys are strings
+
+  }
+
 }
 export function genInterruptiblePatchUploader()
 {

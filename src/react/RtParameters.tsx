@@ -1,13 +1,17 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import {MyGrid} from "./MyGrid";
 
-import { linnPropColumnDefs, patchColumnDefs} from "../xform/columndefs";
+import {linnPropColumnDefs, patchColumnDefs, setDiffColumns} from "../xform/columndefs";
 import {actions, useSelector} from "../actions-integration";
 import {PatchEditorsInit} from "../agstuff/PatchEditors";
-import {GetContextMenuItemsParams, MenuItemDef} from 'ag-grid-community';
 import LinnControl from './LinnControl';
 import {uploadPatch} from '../linnutils/mymidi';
-
+import {Menu, Item, Separator, Submenu, useContextMenu, ItemParams, ContextMenu} from 'react-contexify';
+import 'react-contexify/ReactContexify.css';
+import {ContextMenuHeader} from './ContextMenuHeader';
+import {CompareProps} from '../actions/local-slice';
+import {TotalState} from '../actions/combined-slices';
+const gridstyle = {height: '700px', width: '100%'};
 
 PatchEditorsInit(actions.patch);
 
@@ -21,6 +25,8 @@ PatchEditorsInit(actions.patch);
  */
 const getRowNodeId = (data:any)=>data.nrpn
 const getPatchRowNodeId = (data:any)=>data.updated;
+
+
 
 function describePatch(patch:Record<number,number>):string
 {
@@ -36,66 +42,75 @@ const rtParamsStyle = {
   gridRowGap:'5px'
 };
 
+const filterParamColumns = (compare:CompareProps, o:any):boolean => {
+  const colId = o?.field;
+
+  console.log(`columnId for filtering is ${colId}`, o)
+  switch(compare) {
+    case 'a-b': return !(colId === 'c' || colId === 'd');
+    case 'a-c': return !(colId === 'b' || colId === 'd');
+    case 'a-d': return !(colId === 'b' || colId === 'c');
+    case 'c-d': return !(colId === 'a' || colId === 'b');
+  }
+}
+type AgGridEvent = {event:any};
 export const  RtParameter = () => {
   const [filter, setFilter]  = useState('');
+  const [paramColumnDefs, setParamColumDefs] = useState(linnPropColumnDefs);
+  const [currentPatchName, setCurrentPatchName] = useState('');
+  const [currentPatchData, setCurrentPatchData] = useState(undefined);
+  const [patchDataColumnA, setPatchDataColumnA] = useState<Record<number,number>>({});
   const {
     midi: { paramView, linnsConnected},
-    patch: {patches, filter:patchFilter}
+    patch: {patches, filter:patchFilter},
+    local: {compare}
   } = useSelector(s=>s);
 
-  // while the callback itself is regenerated if linnsConnected changes, an open menu with an option
-  // to upload to Linnstrument will not rerender when status changes
-  const patchMenu = useCallback((params:GetContextMenuItemsParams):(| string | MenuItemDef)[]=>{
-
-    const patchKey = params.node?.data.name;
-    const patchId = `patch '${patchKey}'`;
-    const patch = params.node?.data.data;
-
-    return [
-      {name: `For ${patchId} ${describePatch(patch)}:`, disabled:true},
-      'separator',
-      {name: `Delete patch`,   action: ()=>actions.patch.delete(patchKey)},
-      'separator',
-      {name: `Duplicate`,      action: ()=>actions.patch.saveCopyAs(patchKey, `${patchKey} copy`)},
-
-      {name: `Put in Column A`,     action: ()=>actions.midi.updateParamViewWithPatch('a', patch)},
-      {name: `Put in Column B`,     action: ()=>actions.midi.updateParamViewWithPatch('b', patch)},
-      'separator',
-      {name: `Upload to Linnstrument`,   disabled: linnsConnected !== 1,  action: ()=>uploadPatch(patch)},
-    ];
-
-  },[linnsConnected,patches]);
-
-  // todo this is very inefficient, but fine for now
-  const linnpropRows = Object.values(paramView);
-
-  const paramsMenu = useCallback((params:GetContextMenuItemsParams):(| string | MenuItemDef)[]=>{
+  useEffect(()=>{
+    setDiffColumns(compare.slice(0,1), compare.slice(-1) ) // compare is formay x-y, so this will populate with a/b, a/c, c/d, etc.
+    setParamColumDefs(linnPropColumnDefs.filter(o=>filterParamColumns(compare, o)));  // todo this should be showHideColumn calls instead
+  }, [compare]);
 
 
-    console.log(`getMenuItems params`, params);
-    const colId = params?.column?.getColId();
+  const kPatchContextMenu = 'patchMenu';
+  const kParamsContextMenu = 'paramMenu';
+  //--- context menu stuff
+  const { show:showContextMenu } = useContextMenu({});
 
-    if(colId !== 'a')
-      return [];  // empty is no menu at all
+  // const cmClick = useCallback(({ id, event, props }:ItemParams)=>console.log(`cmClick handler here`, id, event, props),[]);
+
+  const openPatchMenu= useCallback((agGridEvent:any)=>{
+    const {event} = agGridEvent;
+    const data = agGridEvent.node.data;
+    const patchData = data.data;
+    const patchKey = agGridEvent.node?.data.name;
+    setCurrentPatchName(data.name);
+    setCurrentPatchData(patchData);
+
+    if(event) showContextMenu({id: kPatchContextMenu, event, props: {patchData, patchKey, colId:agGridEvent.colId,}});
+
+  },[]);
 
 
-    const patch:Record<number,number> ={};
-    (linnpropRows as any[]).forEach(o=>{
-      if(o.a !== undefined)
-        patch[o.nrpn] = o.a;
-    });
+  const openParamsMenu=useCallback((agGridEvent:any)=>{
+    const {event} = agGridEvent;
+    const patchData:Record<number,number> ={};
+    const populatedRows:any =  (linnpropRows as any[]).filter(o=>o.a !== undefined);
 
-    return [
-      {name: `Save column A to new patch`,  action: ()=>actions.patch.saveAsUnnamed(patch)}, // or should it continuously save in a patch called ''
-      'separator',
-      {name: `Upload to Linnstrument`,   disabled: linnsConnected !== 1,  action: ()=>uploadPatch(patch)},
-    ];
+    populatedRows.forEach((o:any)=>{
+      console.log(`nrpn ${o.nrpn} is populated with value ${o.a}`, o);
+      patchData[o.nrpn] = o.a;
+      }
+    );
+    setPatchDataColumnA(patchData);
 
-
+    // only show menu when rows are populated with something
+    if(event && populatedRows.length) showContextMenu({id: kParamsContextMenu, event, props: {patchData, colId:agGridEvent.colId,}});
   },[paramView]);
 
-
-
+  //---- end context menu stuff
+  // todo this is very inefficient, but fine for now
+  const linnpropRows = Object.values(paramView);
 
   useEffect(()=>{
   if(linnsConnected>1)
@@ -104,20 +119,11 @@ export const  RtParameter = () => {
 
 
 
-
   const ffFilter = (o:any):boolean => filter === '' ||(
     o?.key?.includes(filter) ||
     o?.cat?.includes(filter) ||
     o?.desc?.includes(filter)||
     o?.side?.includes(filter));
-
-/*
-fix the styles so grids are side by side
-fix the filter, etc.
-automatic save files
-add pinned rows for a, current, and default
-save the defaults if not already saved into a patch
- */
 
   return  (
       <div style={rtParamsStyle}>
@@ -146,7 +152,22 @@ save the defaults if not already saved into a patch
           Patch Filter: <input id="pfilter" name="pfilter" type="text" value={patchFilter} onChange={event => actions.patch.saveFilter(event.target.value)}/>
           </div>
           <hr/>
-          <MyGrid dark={false} rowData={patches} menu={patchMenu} columnDefs={patchColumnDefs} getRowNodeId={getPatchRowNodeId}/>
+          <MyGrid style={gridstyle} contextM={openPatchMenu} dark={false} rowData={patches} columnDefs={patchColumnDefs} getRowNodeId={getPatchRowNodeId}>
+          <Menu id={kPatchContextMenu}>
+            <ContextMenuHeader><span style={{color:'black'}}>Patch: </span>{currentPatchName}</ContextMenuHeader>
+            <Separator />
+            <Item disabled={!currentPatchName} id="1" onClick={()=>actions.patch.delete(currentPatchName)}>Delete patch</Item>
+            <Separator />
+            <Item disabled={!currentPatchName} id="2" onClick={()=>actions.patch.saveCopyAs(currentPatchName, `${currentPatchName} copy`)}>Duplicate patch</Item>
+            <Separator />
+            <Item disabled={!currentPatchName} id="3" onClick={()=>actions.midi.updateParamViewWithPatch('a', currentPatchData)}>Put patch in Column A</Item>
+            <Item disabled={!currentPatchName} id="4" onClick={()=>actions.midi.updateParamViewWithPatch('b', currentPatchData)}>Put patch in Column B</Item>
+
+            <Separator />
+            <Item disabled={linnsConnected !== 1 || !currentPatchName}id="Duplicate" onClick={()=>uploadPatch(currentPatchData ?? {})}>Upload to Linnstrument</Item>
+
+          </Menu>
+          </MyGrid>
         </div>
         <div style={{gridColumnStart: 'colParams', gridRowStart:'rowMain'}}>
           <hr/>
@@ -155,8 +176,15 @@ save the defaults if not already saved into a patch
           Parameter Filter: <input id="gfilter" name="gfilter" type="text" value={filter} onChange={event => setFilter(event.target.value)}/>
           </div>
           <hr/>
-          <MyGrid dark={true} rowData={linnpropRows.filter(ffFilter)} columnDefs={linnPropColumnDefs}
-                  getRowNodeId={getRowNodeId} menu={paramsMenu}/>
+          <MyGrid style={gridstyle} contextM={openParamsMenu} dark={true} rowData={linnpropRows.filter(ffFilter)} columnDefs={paramColumnDefs}
+                  getRowNodeId={getRowNodeId}>
+                  <Menu  theme="contexify_theme-dark" id={kParamsContextMenu}>
+                    <ContextMenuHeader><span style={{color:'black'}}>Patch: </span>Column A ({Object.keys(patchDataColumnA).length} keys)</ContextMenuHeader>
+                    <Item onClick={()=>actions.patch.saveAsUnnamed(patchDataColumnA)}>Save Column A to new patch</Item>
+                    <Item onClick={()=>uploadPatch(patchDataColumnA)}
+                          disabled={linnsConnected !== 1}                            >Upload to Linnstrument</Item>
+                  </Menu>
+          </MyGrid>
         </div>
       </div>
     );

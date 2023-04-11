@@ -48,7 +48,7 @@ const Layout = styled.div`
                          "Left CenterBody Right";
 `;
 
-Layout.defaultProps = {left:200, right:0};
+Layout.defaultProps = {left:0, right:0};
 
 const Navbar = styled.section`
     grid-area: Navbar;
@@ -154,13 +154,16 @@ const  App = () => {
   const location = useLocation();
   // when app renders, plug in handler for updates to local storage
   // todo move this to patch-middleware instead when it is created
-  useEffect(()=>
+  useEffect(()=> {
+    // disable browser level context menu it is in the way of our context menus
+    window.document.body.addEventListener('contextmenu', (e)=>{e.preventDefault()});
+
     window.onstorage =
     evt => {
       if(evt === undefined)
         return;
       actions.patch.mirrorOtherInstance(evt.key, evt.oldValue, evt.newValue);
-    },
+    }},
   []);
 
 
@@ -221,13 +224,12 @@ const  App = () => {
                 :
                 <>
                   <Routes>
-                    <Route path="/" element={<Intro/>}/>
+                    <Route path="/"       element={<RtParameter/>}/>
+                    <Route path="/intro"  element={<Intro/>}/>
                     <Route path="/params" element={<RtParameter/>}/>
                     <Route path="/tuning" element={<RtTuning/>}/>
-                    <Route path="/midi" element={<RtMidiview/>}/>
-                    <Route path="/files" element={<RtFiles/>}/>
-
-
+                    <Route path="/midi"   element={<RtMidiview/>}/>
+                    <Route path="/files"  element={<RtFiles/>}/>
                   </Routes>
                 </>
             }
