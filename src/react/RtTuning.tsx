@@ -155,7 +155,7 @@ const  RtTuning = () => {
         <Keyboard>
           <div style={{paddingLeft: '10px', color:'white'}}>
             <SLabel>Split Slider {splitCol}</SLabel>
-            <TSlider  color="orange" name="SplitCol" type="range" min="1" max="25" defaultValue={ splitCol } onChange={ changeSplit }/>
+            <TSlider  color="orange" name="SplitCol" type="range" min="1" max={deviceColumns} defaultValue={ splitCol } onChange={ changeSplit }/>
 
 
             <SLabel>Row Tuning Offset: {tuningOffsetSemis} </SLabel>
