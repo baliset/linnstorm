@@ -162,12 +162,12 @@ const  RtTuning = () => {
             <Radio name="Tuning" choices={intervalNames} defaultChoice="5" setChoice={changeTu2}/>
             <hr/>
             <SLabel>Transpose Semitones:  base of midi note #{baseMidiNote} offset by {transposeSemis} semitones</SLabel>
-            <TSlider  color="green" name="Trans" type="range" min={-baseMidiNote} max={baseMidiNote+67} defaultValue={ transposeSemis } onChange={ changeTr }/>
+            <TSlider  disabled={true} color="green" name="Trans" type="range" min={-baseMidiNote} max={baseMidiNote+67} defaultValue={ transposeSemis } onChange={ changeTr }/>
 
             <SLabel>Tonic on {keyboardMapped[tonic]}</SLabel>
             <TSlider  color="red" name="Tonic" type="range" min="0" max="11" defaultValue={ tonic } onChange={ changeT }/>
             <hr/>
-            Scale Filter: <input id="scfilter" name="scfilter" type="text" value={scaleFilterText} onChange={event => actions.linn.filterScale(event.target.value)}/>
+            Scale Filter: <input disabled={true} id="scfilter" name="scfilter" type="text" value={scaleFilterText} onChange={event => actions.linn.filterScale(event.target.value)}/>
             <span style={{color: 'white'}}> includes {scaleCount} scales</span>
             <br/>
 
