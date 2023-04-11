@@ -13,7 +13,7 @@ export const Swatch = styled.div`
     min-width: 100%;
     min-height: 100%;
     background-color: ${p => colors[p.color]};
-    color: ${p => (p.color === 0||p.color === 5)? 'white':'black'};
+    color: ${p => (p.color === 0||p.color === 5)? 'white':'black'}; /* contrasting label color */
 `;
 
 

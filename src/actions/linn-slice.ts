@@ -123,10 +123,12 @@ const creators:LinnCreators = {
   transposeSemis:(transposeSemis)=>({transposeSemis}),
   tuningOffsetSemis:(tuningOffsetSemis)=>({tuningOffsetSemis}),
   tuningPref: (tuningPref)=>({tuningPref}),
-  filterScale:(scaleFilterText)=>({scaleFilterText})
+  filterScale:(scaleFilterText)=>({scaleFilterText}),
+  deviceType:(columns)=>({columns})
 };
 
 const reducers:LinnReducers = {
+  deviceType:(s, {columns}) =>({...s, deviceColumns:columns}),
     tonic: (s, {value}) => ({
       ...s,
       tonic: value,

@@ -4,17 +4,16 @@ import React from 'react';
 export const LinnCellDiv = styled.div`
   width: fit-content;
   height: fit-content;
-  margin: auto;
-  margin-top: 30px;
-
-`
+  ////margin: auto;
+  //margin-top: 30px;
+`;
 export const LinnRowDiv = styled.div`
   width: fit-content;
   height: fit-content;
 `;
 
 
-type LinnCellProps = {x:number; y:number; isTonic:boolean, isScale:boolean, children:any};
+type LinnCellProps = {x:number; y:number; isTonic:boolean, isScale:boolean, note:number, children:any};
 
 export const LinnCell2= styled('div')<LinnCellProps>`
   --bg:#ccc;
@@ -51,26 +50,23 @@ export const LinnCell2= styled('div')<LinnCellProps>`
   
 `;
 
-export const LinnCell = (p:LinnCellProps) => {
-  const {x,y,isTonic,isScale, children} = p;
+export const LinnCell = ({x,y,isTonic,isScale, children, note}:LinnCellProps) => {
   const dim = 35;
 
   const rg = isTonic? `radial-gradient(#fff, #0ff, #ccc,  #ccc)`:
              isScale? `radial-gradient(#fff, #0f0, #ccc,  #ccc)`:
                        `radial-gradient(#ccc, #ccc)`;
 
-
-
-  return <LinnCell2 x={x} y={y} isTonic={isTonic} isScale={isScale}>
-
-      <div style={{
+  return <LinnCell2 note={note} x={x} y={y} isTonic={isTonic} isScale={isScale}>
+    {(note >= 0 && note <= 127)?
+      (<div style={{
         borderRadius: `${dim + 20}px`,
         height: `${dim}px`,
         paddingTop: '10px',
         textAlign: 'center',
         width: `${dim}px`,
         background: rg,
-      }}>{children}</div>
+      }}>{children}</div>):(<></>)}
 
   </LinnCell2>
 }

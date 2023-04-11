@@ -6,10 +6,11 @@ import {actions, useSelector} from "../actions-integration";
 import {PatchEditorsInit} from "../agstuff/PatchEditors";
 import LinnControl from './LinnControl';
 import {uploadPatch} from '../linnutils/mymidi';
-import {Menu, Item, Separator, Submenu, useContextMenu, ItemParams} from 'react-contexify';
+import {Menu, Item, Separator, Submenu, useContextMenu, ItemParams, ContextMenu} from 'react-contexify';
 import 'react-contexify/ReactContexify.css';
 import {ContextMenuHeader} from './ContextMenuHeader';
 import {CompareProps} from '../actions/local-slice';
+import {TotalState} from '../actions/combined-slices';
 const gridstyle = {height: '700px', width: '100%'};
 
 PatchEditorsInit(actions.patch);
@@ -52,6 +53,7 @@ const filterParamColumns = (compare:CompareProps, o:any):boolean => {
     case 'c-d': return !(colId === 'a' || colId === 'b');
   }
 }
+type AgGridEvent = {event:any};
 export const  RtParameter = () => {
   const [filter, setFilter]  = useState('');
   const [paramColumnDefs, setParamColumDefs] = useState(linnPropColumnDefs);
@@ -93,7 +95,7 @@ export const  RtParameter = () => {
   const openParamsMenu=useCallback((agGridEvent:any)=>{
     const {event} = agGridEvent;
     const patchData:Record<number,number> ={};
-    const populatedRows:any =  (linnpropRows as any[]).filter(o=>o.a !== undefined && o.a !== '');
+    const populatedRows:any =  (linnpropRows as any[]).filter(o=>o.a !== undefined);
 
     populatedRows.forEach((o:any)=>{
       console.log(`nrpn ${o.nrpn} is populated with value ${o.a}`, o);

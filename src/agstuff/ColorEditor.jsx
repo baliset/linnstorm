@@ -24,7 +24,7 @@ const grColorStyle = {
   // width: `${60*4}px`,
   // height: `${45*3}px`,
   display:'grid',
-  gridTemplateColumns: '76px 42px 42px 42px',
+  gridTemplateColumns: '76px 50px 50px 50px',
   gridTemplateRows:'33px 33px 33px',
   gridColumnGap: '2px',
   gridRowGap:'2px',
